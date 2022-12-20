@@ -30,6 +30,7 @@ jobs:
       output2: ${{ steps.step2.outputs.test }}
 
   deploy-test:
+    name: "Test of ${{ steps.step1.outputs.test }}"
     runs-on: 'ubuntu-latest'
     environment: 'test'
     needs: [build-and-publish, deploy-dev]
