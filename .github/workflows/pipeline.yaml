@@ -20,11 +20,6 @@ jobs:
     - name: build
       run: |
         echo "### Helm Manifest ${{ inputs.argocd_tag }}" >> $GITHUB_STEP_SUMMARY
-    - name: Install argocd cli
-      run: |
-        curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
-        install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
-        rm argocd-linux-amd64
 
   deploy-dev:
     name: "Deploy to dev"
@@ -32,13 +27,15 @@ jobs:
     environment: 'dev'
     needs: initiate
     steps:
-
+    - name: Install argocd cli
+      run: |
+        curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+        install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
+        rm argocd-linux-amd64
     - name: Deploy
       run: |
-        echo "argocd list" >> $GITHUB_STEP_SUMMARY
-        echo '<pre>' >> $GITHUB_STEP_SUMMARY
-        argocd --grpc-web app list >> $GITHUB_STEP_SUMMARY
-        echo '</pre>' >> $GITHUB_STEP_SUMMARY
+        echo "do a patch, sync by label, and then wait by label"
+        (echo '<pre>'; argocd --grpc-web app list; echo '</pre>') >> $GITHUB_STEP_SUMMARY
 
   test-automation:
     name: "Test Automation"
@@ -48,7 +45,7 @@ jobs:
     steps:
     - name: deploy
       run: |
-        echo "do test automation"
+        echo "do test automation - consider it happy!"
 
   deploy-test:
     name: "Deploy to test"
@@ -64,7 +61,7 @@ jobs:
     name: "Deploy to prod"
     runs-on: 'ubuntu-latest'
     environment: 'prod'
-    needs: [deploy-test]
+    needs: [test-automation, deploy-test]
     steps:
     - name: deploy
       run: |
