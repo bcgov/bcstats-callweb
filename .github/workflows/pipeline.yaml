@@ -34,13 +34,13 @@ jobs:
         rm argocd-linux-amd64
     - name: Patch
       run: |
-        argocd app patch callweb-dev --patch '{"spec": { "source": { "targetRevision": "${{ inputs.target_revision }}" } }}' --type merge
+        argocd app patch callweb-dev --grpc-web --patch '{"spec": { "source": { "targetRevision": "${{ inputs.target_revision }}" } }}' --type merge
     - name: Sync
       run: |
-        argocd app sync -l env=dev
+        argocd app sync --grpc-web -l env=dev
     - name: Wait
       run: |
-        argocd app wait -l env=dev
+        argocd app wait --grpc-web --timeout 300 -l env=dev
     - name: Report
       run: |
         (echo '<pre>'; argocd --grpc-web app list; echo '</pre>') >> $GITHUB_STEP_SUMMARY
