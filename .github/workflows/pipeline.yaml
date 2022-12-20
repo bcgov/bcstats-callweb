@@ -1,9 +1,12 @@
 name: Continuous Delivery
 
 on:
-  push:
-    branches: [ dev, main ]
-
+  workflow_dispatch:
+    inputs:
+      argocd_tag:
+        description: 'Release tag for tenant-gitops-af9df1'
+        required: true
+        default: ''
 
 jobs:
   build-and-publish:
@@ -12,6 +15,7 @@ jobs:
     - name: build
       run: |
         echo "built!"
+        echo "### Input ${{ inputs.logLevel }}" >> $GITHUB_STEP_SUMMARY
 
   deploy-dev:
     name: "Deploy to dev"
