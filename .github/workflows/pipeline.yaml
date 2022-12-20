@@ -20,6 +20,11 @@ jobs:
     - name: build
       run: |
         echo "### Helm Manifest ${{ inputs.argocd_tag }}" >> $GITHUB_STEP_SUMMARY
+    - name: Install argocd cli
+      run: |
+        curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+        install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
+        rm argocd-linux-amd64
 
   deploy-dev:
     name: "Deploy to dev"
@@ -27,11 +32,6 @@ jobs:
     environment: 'dev'
     needs: initiate
     steps:
-    - name: Install argocd cli
-      run: |
-        curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
-        install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
-        rm argocd-linux-amd64
 
     - name: Deploy
       run: |
@@ -44,7 +44,7 @@ jobs:
     name: "Deploy to test"
     runs-on: 'ubuntu-latest'
     environment: 'test'
-    needs: [initiate, deploy-dev]
+    needs: deploy-dev
     steps:
     - name: deploy
       run: |
@@ -54,12 +54,12 @@ jobs:
     name: "Test Automation"
     runs-on: 'ubuntu-latest'
     environment: 'dev'
-    needs: [initiate, deploy-dev]
+    needs: [deploy-dev]
     concurrency: staging_environment
     steps:
     - name: deploy
       run: |
-        echo "deployed to test!"
+        echo "do test automation"
 
   deploy-prod:
     name: "Deploy to prod"
