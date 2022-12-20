@@ -8,8 +8,12 @@ on:
         required: true
         default: ''
 
+env:
+  ARGOCD_AUTH_TOKEN: ${{ secrets.ARGOCD_AUTH_TOKEN }}
+  ARGOCD_SERVER: ${{ secrets.ARGOCD_SERVER }}
+
 jobs:
-  build-and-publish:
+  publish:
     runs-on: ubuntu-latest
     steps:
     - name: build
@@ -23,11 +27,15 @@ jobs:
     environment: 'dev'
     needs: build-and-publish
     steps:
-    - name: deploy
+    - name: Install argocd cli
       run: |
-        echo "deployed to dev!"
-        echo "argocd sync apps for the dev apps"
-        echo "### Deployed to dev ${GITHUB_REF#refs/*/} ${{github.ref_name}}" >> $GITHUB_STEP_SUMMARY
+        curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+        install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
+        rm argocd-linux-amd64
+
+    - name: Deploy
+      run: |
+        argocd --grpc-web app list >> $GITHUB_STEP_SUMMARY
 
   deploy-test:
     name: "Deploy to test"
