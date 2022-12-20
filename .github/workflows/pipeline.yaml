@@ -23,7 +23,7 @@ jobs:
       run: |
         echo "deployed to dev!"
         echo "argocd sync apps for the dev apps"
-        echo '### Deployed to dev ${GITHUB_REF#refs/*/} ' >> $GITHUB_STEP_SUMMARY
+        echo "### Deployed to dev ${GITHUB_REF#refs/*/} ${{github.ref_name}}" >> $GITHUB_STEP_SUMMARY
 
   deploy-test:
     name: "Deploy to test"
