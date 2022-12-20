@@ -21,13 +21,8 @@ jobs:
     - name: deploy
       run: |
         echo "deployed to dev!"
-    - id: step1
-      run: echo "test=hello" >> $GITHUB_OUTPUT
-    - id: step2
-      run: echo "test=world" >> $GITHUB_OUTPUT        
-    outputs:
-      output1: ${{ steps.step1.outputs.test }}
-      output2: ${{ steps.step2.outputs.test }}
+        echo "argocd sync apps for the dev apps"
+        echo '### Hello world! ' >> $GITHUB_STEP_SUMMARY
 
   deploy-test:
     name: "Test of ${GITHUB_REF#refs/*/}"
