@@ -1,4 +1,5 @@
-name: Continuous Delivery ${{ inputs.argocd_tag }}
+name: Continuous Delivery
+run-name: Release ${{ inputs.argocd_tag }}
 
 on:
   workflow_dispatch:
