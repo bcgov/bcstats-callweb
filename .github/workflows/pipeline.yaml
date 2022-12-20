@@ -13,7 +13,6 @@ jobs:
       run: |
         echo "built!"
 
-
   deploy-dev:
     runs-on: 'ubuntu-latest'
     environment: 'dev'
@@ -22,6 +21,13 @@ jobs:
     - name: deploy
       run: |
         echo "deployed to dev!"
+    - id: step1
+      run: echo "test=hello" >> $GITHUB_OUTPUT
+    - id: step2
+      run: echo "test=world" >> $GITHUB_OUTPUT        
+    outputs:
+      output1: ${{ steps.step1.outputs.test }}
+      output2: ${{ steps.step2.outputs.test }}
 
   deploy-test:
     runs-on: 'ubuntu-latest'
