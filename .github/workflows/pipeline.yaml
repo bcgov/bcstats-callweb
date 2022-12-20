@@ -25,7 +25,7 @@ jobs:
     name: "Deploy to dev"
     runs-on: 'ubuntu-latest'
     environment: 'dev'
-    needs: build-and-publish
+    needs: publish
     steps:
     - name: Install argocd cli
       run: |
@@ -41,7 +41,7 @@ jobs:
     name: "Deploy to test"
     runs-on: 'ubuntu-latest'
     environment: 'test'
-    needs: [build-and-publish, deploy-dev]
+    needs: [publish, deploy-dev]
     steps:
     - name: deploy
       run: |
@@ -51,7 +51,7 @@ jobs:
     name: "Deploy to prod"
     runs-on: 'ubuntu-latest'
     environment: 'prod'
-    needs: [build-and-publish, deploy-test]
+    needs: [publish, deploy-test]
     steps:
     - name: deploy
       run: |
