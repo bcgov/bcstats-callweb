@@ -36,9 +36,9 @@ jobs:
     - name: Deploy
       run: |
         echo "argocd list" >> $GITHUB_STEP_SUMMARY
-        echo '\n```\n' >> $GITHUB_STEP_SUMMARY
+        echo '<pre>' >> $GITHUB_STEP_SUMMARY
         argocd --grpc-web app list >> $GITHUB_STEP_SUMMARY
-        echo '\n```\n' >> $GITHUB_STEP_SUMMARY
+        echo '</pre>' >> $GITHUB_STEP_SUMMARY
 
   deploy-test:
     name: "Deploy to test"
