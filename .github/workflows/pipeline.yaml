@@ -1,5 +1,5 @@
 name: Continuous Delivery
-run-name: Release ${{ inputs.argocd_tag }}
+run-name: CD Release ${{ inputs.argocd_tag }}
 
 on:
   workflow_dispatch:
@@ -14,19 +14,18 @@ env:
   ARGOCD_SERVER: ${{ secrets.ARGOCD_SERVER }}
 
 jobs:
-  publish:
+  initiate:
     runs-on: ubuntu-latest
     steps:
     - name: build
       run: |
-        echo "built!"
         echo "### Helm Manifest ${{ inputs.argocd_tag }}" >> $GITHUB_STEP_SUMMARY
 
   deploy-dev:
     name: "Deploy to dev"
     runs-on: 'ubuntu-latest'
     environment: 'dev'
-    needs: publish
+    needs: initiate
     steps:
     - name: Install argocd cli
       run: |
@@ -45,7 +44,18 @@ jobs:
     name: "Deploy to test"
     runs-on: 'ubuntu-latest'
     environment: 'test'
-    needs: [publish, deploy-dev]
+    needs: [initiate, deploy-dev]
+    steps:
+    - name: deploy
+      run: |
+        echo "deployed to test!"
+
+  test-automation:
+    name: "Deploy to test"
+    runs-on: 'ubuntu-latest'
+    environment: 'test'
+    needs: [initiate, deploy-dev]
+    concurrency: staging_environment
     steps:
     - name: deploy
       run: |
@@ -55,7 +65,8 @@ jobs:
     name: "Deploy to prod"
     runs-on: 'ubuntu-latest'
     environment: 'prod'
-    needs: [publish, deploy-test]
+    needs: [initiate, test-automation, deploy-test]
+    concurrency: staging_environment
     steps:
     - name: deploy
       run: |
