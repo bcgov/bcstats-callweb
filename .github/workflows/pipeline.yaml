@@ -32,9 +32,17 @@ jobs:
         curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
         install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
         rm argocd-linux-amd64
-    - name: Deploy
+    - name: Patch
       run: |
-        echo "do a patch, sync by label, and then wait by label"
+        argocd app patch callweb-dev --patch '{"spec": { "source": { "targetRevision": "${{ inputs.argocd_tag }}" } }}' --type merge
+    - name: Sync
+      run: |
+        argocd app sync -l env=dev
+    - name: Wait
+      run: |
+        argocd app wait -l env=dev
+    - name: Report
+      run: |
         (echo '<pre>'; argocd --grpc-web app list; echo '</pre>') >> $GITHUB_STEP_SUMMARY
 
   test-automation:
