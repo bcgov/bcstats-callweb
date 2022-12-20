@@ -15,7 +15,7 @@ jobs:
     - name: build
       run: |
         echo "built!"
-        echo "### Input ${{ inputs.logLevel }}" >> $GITHUB_STEP_SUMMARY
+        echo "### Helm Manifest ${{ inputs.argocd_tag }}" >> $GITHUB_STEP_SUMMARY
 
   deploy-dev:
     name: "Deploy to dev"
