@@ -1,4 +1,4 @@
-name: Continuous Delivery
+name: Continuous Delivery ${{ inputs.argocd_tag }}
 
 on:
   workflow_dispatch:
