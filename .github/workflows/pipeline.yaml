@@ -51,9 +51,9 @@ jobs:
         echo "deployed to test!"
 
   test-automation:
-    name: "Deploy to test"
+    name: "Test Automation"
     runs-on: 'ubuntu-latest'
-    environment: 'test'
+    environment: 'dev'
     needs: [initiate, deploy-dev]
     concurrency: staging_environment
     steps:
@@ -65,7 +65,7 @@ jobs:
     name: "Deploy to prod"
     runs-on: 'ubuntu-latest'
     environment: 'prod'
-    needs: [initiate, test-automation, deploy-test]
+    needs: [deploy-test]
     concurrency: staging_environment
     steps:
     - name: deploy
