@@ -40,6 +40,16 @@ jobs:
         argocd --grpc-web app list >> $GITHUB_STEP_SUMMARY
         echo '</pre>' >> $GITHUB_STEP_SUMMARY
 
+  test-automation:
+    name: "Test Automation"
+    runs-on: 'ubuntu-latest'
+    environment: 'dev'
+    needs: [deploy-dev]
+    steps:
+    - name: deploy
+      run: |
+        echo "do test automation"
+
   deploy-test:
     name: "Deploy to test"
     runs-on: 'ubuntu-latest'
@@ -50,23 +60,11 @@ jobs:
       run: |
         echo "deployed to test!"
 
-  test-automation:
-    name: "Test Automation"
-    runs-on: 'ubuntu-latest'
-    environment: 'dev'
-    needs: [deploy-dev]
-    concurrency: staging_environment
-    steps:
-    - name: deploy
-      run: |
-        echo "do test automation"
-
   deploy-prod:
     name: "Deploy to prod"
     runs-on: 'ubuntu-latest'
     environment: 'prod'
     needs: [deploy-test]
-    concurrency: staging_environment
     steps:
     - name: deploy
       run: |
