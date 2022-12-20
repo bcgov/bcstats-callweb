@@ -41,11 +41,12 @@ jobs:
     name: "Test Automation"
     runs-on: 'ubuntu-latest'
     environment: 'dev'
-    needs: [deploy-dev]
+    needs: [deploy-test]
     steps:
     - name: deploy
       run: |
         echo "do test automation - consider it happy!"
+        echo "Test automation not implemented yet" >> $GITHUB_STEP_SUMMARY
 
   deploy-test:
     name: "Deploy to test"
