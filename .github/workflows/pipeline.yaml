@@ -1,0 +1,42 @@
+name: Continuous Delivery
+
+on:
+  push:
+    branches: [ main ]
+
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    steps:
+    - name: build
+      run: |
+        echo "built!"
+
+
+  deploy-dev:
+    runs-on: 'ubuntu-latest'
+    environment: 'dev'
+    needs: build-and-publish
+    steps:
+    - name: deploy
+      run: |
+        echo "deployed to dev!"
+
+  deploy-test:
+    runs-on: 'ubuntu-latest'
+    environment: 'test'
+    needs: [build-and-publish, deploy-dev]
+    steps:
+    - name: deploy
+      run: |
+        echo "deployed to test!"
+
+  deploy-prod:
+    runs-on: 'ubuntu-latest'
+    environment: 'prod'
+    needs: [build-and-publish, deploy-test]
+    steps:
+    - name: deploy
+      run: |
+        echo "deployed to dev!"
