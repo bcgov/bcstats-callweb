@@ -11,7 +11,7 @@ on:
       callweb_image_tag:
         description: 'Image Tag from bcstats-servers-mgmt'
         required: false
-        default: 'openshift-impl'
+        default: ''
 
 env:
   ARGOCD_AUTH_TOKEN: ${{ secrets.ARGOCD_AUTH_TOKEN }}
