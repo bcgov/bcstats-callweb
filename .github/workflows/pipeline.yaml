@@ -134,6 +134,28 @@ jobs:
       run: |
         (echo '<pre>'; argocd --grpc-web app list -l env=test; echo '</pre>') >> $GITHUB_STEP_SUMMARY
 
+  deploy-gateway-config:
+    name: "Deploy to APS Gateway"
+    runs-on: 'ubuntu-latest'
+    environment: 'prod'
+    needs: [initiate]
+    if: inputs.include_gateway
+    steps:
+    - name: Install argocd cli
+      run: |
+        curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+        install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
+        rm argocd-linux-amd64
+    - name: Sync Gateway
+      run: |
+        argocd app sync --grpc-web --timeout 300 -l env=dev -l role=gateway
+    - name: Wait
+      run: |
+        argocd app wait --grpc-web --timeout 300 -l env=dev -l role=gateway
+    - name: Report
+      run: |
+        (echo '<pre>'; argocd --grpc-web app list -l env=dev -l role=gateway; echo '</pre>') >> $GITHUB_STEP_SUMMARY
+
   deploy-prod:
     name: "Deploy to prod"
     runs-on: 'ubuntu-latest'
