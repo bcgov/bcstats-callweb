@@ -53,6 +53,7 @@ jobs:
     runs-on: 'ubuntu-latest'
     environment: 'dev'
     needs: [ initiate, image-tag ]
+    if: always()
     steps:
     - name: Install argocd cli
       run: |
