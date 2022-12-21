@@ -14,7 +14,7 @@ on:
         default: ''
       include_gateway:
         type: boolean
-        description: 'Sync API Gateway configuration'
+        description: 'Deploy API Gateway configuration'
         default: true
 
 env:
@@ -76,12 +76,12 @@ jobs:
         done
     - name: Sync
       run: |
-        argocd app sync --grpc-web --timeout 300 -l env=dev -l role!=gateway
+        argocd app sync --grpc-web --timeout 300 admin-dev callweb-dev minio-dev mysql-dev
     - name: Sync Gateway
       run: |
         if [ ${{ inputs.include_gateway }} ]
         then
-          argocd app sync --grpc-web --timeout 300 -l env=dev -l 'role=gateway'
+          argocd app sync --grpc-web --timeout 300 -l env=dev -l role=gateway
         fi
     - name: Wait
       run: |
