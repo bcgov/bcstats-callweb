@@ -111,7 +111,7 @@ jobs:
     - name: Patch
       shell: bash
       run: |
-        for app in admin-test mysql-test
+        for app in admin-test minio-test mysql-test
         do
           argocd app patch $app \
             --grpc-web \
@@ -131,7 +131,7 @@ jobs:
   deploy-gateway-config:
     name: "Deploy to APS Gateway"
     runs-on: 'ubuntu-latest'
-    environment: 'prod'
+    environment: 'gateway'
     needs: [initiate]
     if: inputs.include_gateway
     steps:
