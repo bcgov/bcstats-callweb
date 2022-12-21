@@ -24,6 +24,7 @@ jobs:
     - name: build
       run: |
         echo "### Helm Manifest ${{ inputs.target_revision }}" >> $GITHUB_STEP_SUMMARY
+        echo "https://github.com/bcgov-c/tenant-gitops-af9df1/releases/tag/${{ inputs.target_revision }}" >> $GITHUB_STEP_SUMMARY
 
 
   deploy-dev:
