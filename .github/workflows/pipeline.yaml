@@ -118,7 +118,7 @@ jobs:
     - name: Patch
       shell: bash
       run: |
-        for app in aps-gateway-dev
+        for app in aps-gateway
         do
           argocd app patch $app \
             --grpc-web \
@@ -127,13 +127,13 @@ jobs:
         done
     - name: Sync Gateway
       run: |
-        argocd app sync --grpc-web --timeout 300 -l env=dev -l role=gateway
+        argocd app sync --grpc-web --timeout 300 -l role=gateway
     - name: Wait
       run: |
-        argocd app wait --grpc-web --timeout 300 -l env=dev -l role=gateway
+        argocd app wait --grpc-web --timeout 300 -l role=gateway
     - name: Report
       run: |
-        (echo '<pre>'; argocd --grpc-web app list -l env=dev -l role=gateway; echo '</pre>') >> $GITHUB_STEP_SUMMARY
+        (echo '<pre>'; argocd --grpc-web app list -l role=gateway; echo '</pre>') >> $GITHUB_STEP_SUMMARY
 
   deploy-prod:
     name: "Deploy to prod"
