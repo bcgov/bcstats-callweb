@@ -79,7 +79,7 @@ jobs:
         argocd app sync --grpc-web --timeout 300 -l env=dev -l 'role notin (gateway)'
     - name: Sync Gateway
       run: |
-        if ${{ inputs.include_gateway }} ]
+        if [ ${{ inputs.include_gateway }} ]
         then
           argocd app sync --grpc-web --timeout 300 -l env=dev -l 'role=gateway'
         fi
