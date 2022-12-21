@@ -1,5 +1,5 @@
 name: Continuous Delivery
-run-name: CD Release ${{ inputs.target_revision }}
+run-name: CD Release ${{ inputs.target_revision }} ${{ inputs.commit_note }}
 
 on:
   workflow_dispatch:
@@ -12,6 +12,10 @@ on:
         type: boolean
         description: 'Deploy API Gateway configuration'
         default: true
+      commit_note:
+        description: 'Commit note'
+        required: false
+        default: ''
 
 env:
   ARGOCD_AUTH_TOKEN: ${{ secrets.ARGOCD_AUTH_TOKEN }}
