@@ -67,7 +67,7 @@ jobs:
     - name: Patch
       shell: bash
       run: |
-        for app in admin-dev aps-gateway-dev callweb-dev minio-dev mysql-dev
+        for app in admin-dev callweb-dev minio-dev mysql-dev
         do
           argocd app patch $app \
             --grpc-web \
@@ -140,6 +140,16 @@ jobs:
         curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
         install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
         rm argocd-linux-amd64
+    - name: Patch
+      shell: bash
+      run: |
+        for app in aps-gateway-dev
+        do
+          argocd app patch $app \
+            --grpc-web \
+            --patch '{"spec": { "source": { "targetRevision": "${{ inputs.target_revision }}" } }}' \
+            --type merge
+        done
     - name: Sync Gateway
       run: |
         argocd app sync --grpc-web --timeout 300 -l env=dev -l role=gateway
