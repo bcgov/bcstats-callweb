@@ -6,8 +6,12 @@ on:
     inputs:
       target_revision:
         description: 'Revision from tenant-gitops-af9df1'
-        required: true
+        required: false
         default: ''
+      callweb_image_tag:
+        description: 'Image Tag from bcstats-servers-mgmt'
+        required: false
+        default: 'openshift-impl'
 
 env:
   ARGOCD_AUTH_TOKEN: ${{ secrets.ARGOCD_AUTH_TOKEN }}
@@ -21,11 +25,33 @@ jobs:
       run: |
         echo "### Helm Manifest ${{ inputs.target_revision }}" >> $GITHUB_STEP_SUMMARY
 
+  image-tag:
+    if: inputs.callweb_image_tag != ""
+    name: "Update image tag"
+    runs-on: 'ubuntu-latest'
+    environment: 'dev'
+    needs: initiate
+    steps:
+    - name: Install argocd cli
+      run: |
+        curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+        install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
+        rm argocd-linux-amd64
+    - name: Patch
+      shell: bash
+      run: |
+        for app in admin-dev callweb-dev
+        do
+          argocd app set $app \
+            --grpc-web \
+            --helm-set callweb.image.tag=${{ inputs.callweb_image_tag }}
+        done
+
   deploy-dev:
     name: "Deploy to dev"
     runs-on: 'ubuntu-latest'
     environment: 'dev'
-    needs: initiate
+    needs: [ initiate, image-tag ]
     steps:
     - name: Install argocd cli
       run: |
