@@ -1,9 +1,9 @@
 name: Continuous Delivery
 run-name: CD Release ${{ inputs.target_revision }} ${{ inputs.commit_note }}
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+# concurrency:
+#   group: ${{ github.workflow }}-${{ github.ref }}
+#   cancel-in-progress: true
 
 on:
   workflow_dispatch:
