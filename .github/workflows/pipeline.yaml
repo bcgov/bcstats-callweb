@@ -89,6 +89,7 @@ jobs:
     runs-on: 'ubuntu-latest'
     environment: 'dev'
     needs: [deploy-dev]
+    if: always()
     steps:
     - name: deploy
       run: |
@@ -100,6 +101,7 @@ jobs:
     runs-on: 'ubuntu-latest'
     environment: 'test'
     needs: deploy-dev
+    if: always()
     steps:
     - name: Install argocd cli
       run: |
@@ -131,6 +133,7 @@ jobs:
     runs-on: 'ubuntu-latest'
     environment: 'prod'
     needs: [test-automation, deploy-test]
+    if: always()
     steps:
     - name: deploy
       run: |
