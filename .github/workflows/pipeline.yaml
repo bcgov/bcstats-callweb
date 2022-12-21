@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
     inputs:
       target_revision:
-        description: 'Target revision from tenant-gitops-af9df1'
+        description: 'Revision from tenant-gitops-af9df1'
         required: true
         default: ''
 
@@ -33,11 +33,16 @@ jobs:
         install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
         rm argocd-linux-amd64
     - name: Patch
+      shell: bash
       run: |
-        argocd app patch callweb-dev --grpc-web --patch '{"spec": { "source": { "targetRevision": "${{ inputs.target_revision }}" } }}' --type merge
+        PATCH: '{"spec": { "source": { "targetRevision": "${{ inputs.target_revision }}" } }}'
+        for app in admin-dev aps-gateway-dev callweb-dev minio-dev mysql-dev
+        do
+          argocd app patch $app --grpc-web --patch $PATCH --type merge
+        done
     - name: Sync
       run: |
-        argocd app sync --grpc-web -l env=dev
+        argocd app sync --grpc-web --timeout 300 -l env=dev
     - name: Wait
       run: |
         argocd app wait --grpc-web --timeout 300 -l env=dev
