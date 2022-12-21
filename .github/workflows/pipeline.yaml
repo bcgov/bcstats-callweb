@@ -30,6 +30,14 @@ jobs:
         echo "### Helm Manifest ${{ inputs.target_revision }}" >> $GITHUB_STEP_SUMMARY
         echo "https://github.com/bcgov-c/tenant-gitops-af9df1/releases/tag/${{ inputs.target_revision }}" >> $GITHUB_STEP_SUMMARY
 
+    - name: Install argocd cli
+      run: |
+        curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+        install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
+        rm argocd-linux-amd64
+    - name: Report
+      run: |
+        (echo '<pre>'; argocd --grpc-web app list; echo '</pre>') >> $GITHUB_STEP_SUMMARY
 
   deploy-dev:
     name: "Deploy to dev"
