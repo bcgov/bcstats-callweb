@@ -12,6 +12,10 @@ on:
         description: 'Image Tag from bcstats-servers-mgmt'
         required: false
         default: ''
+      include_gateway:
+        type: boolean
+        description: 'Include API Gateway configuration sync'
+        default: true
 
 env:
   ARGOCD_AUTH_TOKEN: ${{ secrets.ARGOCD_AUTH_TOKEN }}
