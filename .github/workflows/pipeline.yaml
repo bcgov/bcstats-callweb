@@ -50,7 +50,7 @@ jobs:
         argocd app wait --grpc-web --timeout 300 -l env=dev
     - name: Report
       run: |
-        (echo '<pre>'; argocd --grpc-web app list; echo '</pre>') >> $GITHUB_STEP_SUMMARY
+        (echo '<pre>'; argocd --grpc-web app list -l env=dev; echo '</pre>') >> $GITHUB_STEP_SUMMARY
 
   test-automation:
     name: "Test Automation"
