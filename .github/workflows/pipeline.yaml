@@ -44,8 +44,8 @@ jobs:
         do
           argocd app set $app \
             --grpc-web \
-            --helm-set callweb.image.tag=${{ inputs.callweb_image_tag }} \
-            --helm-set callweb.extraContainers[0].image=artifacts.developer.gov.bc.ca/aaf9-docker/bcstats-callweb:${{ inputs.callweb_image_tag }}
+            --helm-set callweb.image.tag=${{ inputs.callweb_image_tag }}
+            # --helm-set callweb.extraContainers[0].image=artifacts.developer.gov.bc.ca/aaf9-docker/bcstats-callweb:${{ inputs.callweb_image_tag }}
         done
 
   deploy-dev:
