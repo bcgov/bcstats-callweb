@@ -26,7 +26,7 @@ jobs:
         echo "### Helm Manifest ${{ inputs.target_revision }}" >> $GITHUB_STEP_SUMMARY
 
   image-tag:
-    if: inputs.callweb_image_tag != ""
+    if: inputs.callweb_image_tag != ''
     name: "Update image tag"
     runs-on: 'ubuntu-latest'
     environment: 'dev'
