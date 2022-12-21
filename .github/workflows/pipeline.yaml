@@ -8,10 +8,6 @@ on:
         description: 'Revision from tenant-gitops-af9df1'
         required: false
         default: ''
-      callweb_image_tag:
-        description: 'Image Tag from bcstats-servers-mgmt'
-        required: false
-        default: ''
       include_gateway:
         type: boolean
         description: 'Deploy API Gateway configuration'
@@ -29,34 +25,12 @@ jobs:
       run: |
         echo "### Helm Manifest ${{ inputs.target_revision }}" >> $GITHUB_STEP_SUMMARY
 
-  image-tag:
-    if: inputs.callweb_image_tag != ''
-    name: "Update image tag"
-    runs-on: 'ubuntu-latest'
-    environment: 'dev'
-    needs: initiate
-    steps:
-    - name: Install argocd cli
-      run: |
-        curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
-        install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
-        rm argocd-linux-amd64
-    - name: Patch
-      shell: bash
-      run: |
-        for app in admin-dev callweb-dev
-        do
-          argocd app set $app \
-            --grpc-web \
-            --helm-set callweb.image.tag=${{ inputs.callweb_image_tag }}
-            # --helm-set callweb.extraContainers[0].image=artifacts.developer.gov.bc.ca/aaf9-docker/bcstats-callweb:${{ inputs.callweb_image_tag }}
-        done
 
   deploy-dev:
     name: "Deploy to dev"
     runs-on: 'ubuntu-latest'
     environment: 'dev'
-    needs: [ initiate, image-tag ]
+    needs: [ initiate ]
     if: always()
     steps:
     - name: Install argocd cli
@@ -76,7 +50,7 @@ jobs:
         done
     - name: Sync
       run: |
-        argocd app sync --grpc-web --timeout 300 admin-dev callweb-dev minio-dev mysql-dev
+        argocd app sync --grpc-web --timeout 300 --async admin-dev callweb-dev minio-dev mysql-dev
     - name: Wait
       run: |
         argocd app wait --grpc-web --timeout 300 -l env=dev
@@ -85,10 +59,10 @@ jobs:
         (echo '<pre>'; argocd --grpc-web app list -l env=dev; echo '</pre>') >> $GITHUB_STEP_SUMMARY
 
   test-automation:
-    name: "Test Automation"
+    name: "Test Automation TBD"
     runs-on: 'ubuntu-latest'
     environment: 'dev'
-    needs: [deploy-dev]
+    needs: [ deploy-dev ]
     if: always()
     steps:
     - name: deploy
@@ -132,7 +106,7 @@ jobs:
     name: "Deploy to APS Gateway"
     runs-on: 'ubuntu-latest'
     environment: 'gateway'
-    needs: [initiate]
+    needs: [ initiate ]
     if: inputs.include_gateway
     steps:
     - name: Install argocd cli
