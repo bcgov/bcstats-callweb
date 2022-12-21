@@ -1,6 +1,8 @@
 name: Continuous Delivery
 run-name: CD Release ${{ inputs.target_revision }} ${{ inputs.commit_note }}
 
+concurrency: callweb-pipeline
+
 on:
   workflow_dispatch:
     inputs:
