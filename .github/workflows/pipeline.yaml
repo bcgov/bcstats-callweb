@@ -35,10 +35,12 @@ jobs:
     - name: Patch
       shell: bash
       run: |
-        export PATCH='{"spec": { "source": { "targetRevision": "${{ inputs.target_revision }}" } }}'
         for app in admin-dev aps-gateway-dev callweb-dev minio-dev mysql-dev
         do
-          argocd app patch $app --grpc-web --patch $PATCH --type merge
+          argocd app patch $app \
+            --grpc-web \
+            --patch '{"spec": { "source": { "targetRevision": "${{ inputs.target_revision }}" } }}' \
+            --type merge
         done
     - name: Sync
       run: |
