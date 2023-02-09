@@ -44,13 +44,14 @@ jobs:
           namespace: ${{ vars.OPENSHIFT_NAMESPACE }}
 
       - name: "Get Helm"
-        if: github.ref != 'refs/heads/dev'
         run: |
           curl -L -O https://get.helm.sh/helm-v3.4.2-linux-amd64.tar.gz
           tar -xf helm-v3.4.2-linux-amd64.tar.gz
+          export PATH=$PATH:`pwd`/linux-amd64
 
       - name: Report
         run: |
+          oc get pods
           (echo '<pre>'; helm list; echo '</pre>') >> $GITHUB_STEP_SUMMARY
 
       # - name: 'Deploy Solution'
