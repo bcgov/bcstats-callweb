@@ -20,7 +20,7 @@ on:
 jobs:
   initiate:
     runs-on: ubuntu-latest
-    environment: dev
+    environment: "dev"
     steps:
       - name: build
         run: |
