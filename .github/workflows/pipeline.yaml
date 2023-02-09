@@ -41,7 +41,7 @@ jobs:
           # Disables SSL cert checking. Use this if you don't have the certificate authority data.
           insecure_skip_tls_verify: true
 
-          namespace: ${{ env.OPENSHIFT_NAMESPACE }}
+          namespace: ${{ vars.OPENSHIFT_NAMESPACE }}
 
       - name: "Get Helm"
         if: github.ref != 'refs/heads/dev'
