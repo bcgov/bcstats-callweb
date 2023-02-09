@@ -1,163 +1,63 @@
 name: Continuous Delivery
 run-name: CD Release ${{ inputs.target_revision }} ${{ inputs.commit_note }}
 
-# concurrency:
-#   group: ${{ github.workflow }}-${{ github.ref }}
-#   cancel-in-progress: true
-
 on:
   workflow_dispatch:
     inputs:
       target_revision:
-        description: 'Revision from tenant-gitops-af9df1'
+        description: "Revision from tenant-gitops-af9df1"
         required: false
-        default: ''
+        default: ""
       include_gateway:
         type: boolean
-        description: 'Deploy API Gateway configuration'
+        description: "Deploy API Gateway configuration"
         default: true
       commit_note:
-        description: 'Commit note'
+        description: "Commit note"
         required: false
-        default: ''
+        default: ""
 
 env:
-  ARGOCD_AUTH_TOKEN: ${{ secrets.ARGOCD_AUTH_TOKEN }}
-  ARGOCD_SERVER: ${{ secrets.ARGOCD_SERVER }}
+  REGISTRY: artifacts.developer.gov.bc.ca
+  REGISTRY_USERNAME: ${{ secrets.CONTAINER_REGISTRY_USERNAME }}
+  REGISTRY_PASSWORD: ${{ secrets.CONTAINER_REGISTRY_PASSWORD }}
 
 jobs:
   initiate:
     runs-on: ubuntu-latest
     steps:
-    - name: build
-      run: |
-        echo "### Helm Manifest ${{ inputs.target_revision }}" >> $GITHUB_STEP_SUMMARY
-        echo "https://github.com/bcgov-c/tenant-gitops-af9df1/releases/tag/${{ inputs.target_revision }}" >> $GITHUB_STEP_SUMMARY
+      - name: build
+        run: |
+          echo "### Helm Manifest ${{ inputs.target_revision }}" >> $GITHUB_STEP_SUMMARY
+          echo "https://github.com/bcgov-c/tenant-gitops-af9df1/releases/tag/${{ inputs.target_revision }}" >> $GITHUB_STEP_SUMMARY
 
-    - name: Install argocd cli
-      run: |
-        curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
-        install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
-        rm argocd-linux-amd64
-    - name: Report
-      run: |
-        (echo '<pre>'; argocd --grpc-web app list; echo '</pre>') >> $GITHUB_STEP_SUMMARY
+      - name: Install oc
+        uses: redhat-actions/oc-installer@v1
+        with:
+          version: "4.6"
 
-  deploy-dev:
-    name: "Deploy to dev"
-    runs-on: 'ubuntu-latest'
-    environment: 'dev'
-    needs: [ initiate ]
-    if: always()
-    steps:
-    - name: Install argocd cli
-      run: |
-        curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
-        install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
-        rm argocd-linux-amd64
-    - name: Patch
-      shell: bash
-      run: |
-        for app in admin-dev callweb-dev minio-dev mysql-dev
-        do
-          argocd app patch $app \
-            --grpc-web \
-            --patch '{"spec": { "source": { "targetRevision": "${{ inputs.target_revision }}" } }}' \
-            --type merge
-        done
-    - name: Sync
-      run: |
-        argocd app sync --grpc-web --timeout 300 --async admin-dev callweb-dev minio-dev mysql-dev
-    - name: Wait
-      run: |
-        argocd app wait --grpc-web --timeout 300 -l env=dev
-    - name: Report
-      run: |
-        (echo '<pre>'; argocd --grpc-web app list -l env=dev; echo '</pre>') >> $GITHUB_STEP_SUMMARY
+      - name: Authenticate to silver and set context
+        uses: redhat-actions/oc-login@v1
+        with:
+          openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
+          openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
 
-  test-automation:
-    name: "Test Automation TBD"
-    runs-on: 'ubuntu-latest'
-    environment: 'dev'
-    needs: [ deploy-dev ]
-    if: always()
-    steps:
-    - name: deploy
-      run: |
-        echo "do test automation - consider it happy!"
-        echo "Test automation not implemented yet" >> $GITHUB_STEP_SUMMARY
+          # Disables SSL cert checking. Use this if you don't have the certificate authority data.
+          insecure_skip_tls_verify: true
 
-  deploy-test:
-    name: "Deploy to test"
-    runs-on: 'ubuntu-latest'
-    environment: 'test'
-    needs: deploy-dev
-    if: always()
-    steps:
-    - name: Install argocd cli
-      run: |
-        curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
-        install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
-        rm argocd-linux-amd64
-    - name: Patch
-      shell: bash
-      run: |
-        for app in admin-test minio-test mysql-test
-        do
-          argocd app patch $app \
-            --grpc-web \
-            --patch '{"spec": { "source": { "targetRevision": "${{ inputs.target_revision }}" } }}' \
-            --type merge
-        done
-    - name: Sync
-      run: |
-        argocd app sync --grpc-web --timeout 300 -l env=test
-    - name: Wait
-      run: |
-        argocd app wait --grpc-web --timeout 300 -l env=test
-    - name: Report
-      run: |
-        (echo '<pre>'; argocd --grpc-web app list -l env=test; echo '</pre>') >> $GITHUB_STEP_SUMMARY
+          namespace: ${{ env.OPENSHIFT_NAMESPACE }}
 
-  deploy-gateway-config:
-    name: "Deploy to APS Gateway"
-    runs-on: 'ubuntu-latest'
-    environment: 'gateway'
-    needs: [ initiate ]
-    if: inputs.include_gateway
-    steps:
-    - name: Install argocd cli
-      run: |
-        curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
-        install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
-        rm argocd-linux-amd64
-    - name: Patch
-      shell: bash
-      run: |
-        for app in aps-gateway
-        do
-          argocd app patch $app \
-            --grpc-web \
-            --patch '{"spec": { "source": { "targetRevision": "${{ inputs.target_revision }}" } }}' \
-            --type merge
-        done
-    - name: Sync Gateway
-      run: |
-        argocd app sync --grpc-web --timeout 300 -l role=gateway
-    - name: Wait
-      run: |
-        argocd app wait --grpc-web --timeout 300 -l role=gateway
-    - name: Report
-      run: |
-        (echo '<pre>'; argocd --grpc-web app list -l role=gateway; echo '</pre>') >> $GITHUB_STEP_SUMMARY
+      - name: "Get Helm"
+        if: github.ref != 'refs/heads/dev'
+        run: |
+          curl -L -O https://get.helm.sh/helm-v3.4.2-linux-amd64.tar.gz
+          tar -xf helm-v3.4.2-linux-amd64.tar.gz
 
-  deploy-prod:
-    name: "Deploy to prod"
-    runs-on: 'ubuntu-latest'
-    environment: 'prod'
-    needs: [test-automation, deploy-test]
-    if: always()
-    steps:
-    - name: deploy
-      run: |
-        echo "deployed to prod!"
+      - name: Report
+        run: |
+          (echo '<pre>'; helm list; echo '</pre>') >> $GITHUB_STEP_SUMMARY
+
+      # - name: 'Deploy Solution'
+      #   if: github.ref != 'refs/heads/dev'
+      #   run: |
+      #     export PATH=$PATH:`pwd`/linux-amd64
