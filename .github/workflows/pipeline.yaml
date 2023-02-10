@@ -27,6 +27,8 @@ jobs:
           echo "### Helm Manifest ${{ inputs.target_revision }}" >> $GITHUB_STEP_SUMMARY
           echo "https://github.com/bcgov-c/tenant-gitops-af9df1/releases/tag/${{ inputs.target_revision }}" >> $GITHUB_STEP_SUMMARY
 
+      - uses: actions/checkout@v3
+
       - name: Install oc
         uses: redhat-actions/oc-installer@v1
         with:
@@ -54,12 +56,11 @@ jobs:
           (echo '<pre>'; helm version; echo '</pre>') >> $GITHUB_STEP_SUMMARY
           (echo '<pre>'; helm list; echo '</pre>') >> $GITHUB_STEP_SUMMARY
 
-      - uses: actions/checkout@v3
-
       - name: "Deploy Solution"
         run: |
           echo "${{ secrets.CONFIG }}" > .env
-          . .env
+          . ./.env
+          cat .env
           envsubst < env.template.yaml > .env.yaml
           cat .env.yaml
           # helm dependency build ./aps-gateway
