@@ -51,6 +51,7 @@ jobs:
 
       - name: Report
         run: |
+          (echo '<pre>'; helm version; echo '</pre>') >> $GITHUB_STEP_SUMMARY
           (echo '<pre>'; helm list; echo '</pre>') >> $GITHUB_STEP_SUMMARY
 
       - uses: actions/checkout@v2
@@ -79,3 +80,9 @@ jobs:
 
           helm dependency build callweb-survey
           helm upgrade --install survey-dev -n ${{ vars.OCP_LICENSE_PLATE }}-dev --history-max 2 -f .env.yaml ./callweb-survey
+
+      - name: Post-Upgrade Summary
+        run: |
+          echo "### Post Ugprade Summary" >> $GITHUB_STEP_SUMMARY
+          (echo '<pre>'; helm version; echo '</pre>') >> $GITHUB_STEP_SUMMARY
+          (echo '<pre>'; helm list; echo '</pre>') >> $GITHUB_STEP_SUMMARY
