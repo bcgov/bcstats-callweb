@@ -68,7 +68,9 @@ runs:
         helm upgrade --install admin-${{ inputs.environment }} $HELM_ARGS ./charts/callweb-admin
 
         helm dependency build charts/callweb-survey
-        helm upgrade --install survey-${{ inputs.environment }} $HELM_ARGS ./charts/callweb-survey
+        helm upgrade --install survey-${{ inputs.environment }} $HELM_ARGS \
+          -f ./charts/callweb-survey/values.${{ inputs.environment }}.yaml \
+          ./charts/callweb-survey
 
     - name: Post Upgrade Summary
       shell: bash
