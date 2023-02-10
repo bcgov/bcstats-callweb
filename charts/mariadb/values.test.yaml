@@ -1,7 +1,8 @@
 mariadb:
   primary:
     persistence:
-      size: 50Mi
+      size: 400Mi
+
     resources:
       limits:
         cpu: 100m

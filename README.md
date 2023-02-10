@@ -6,8 +6,6 @@ Four Environments are configured: `dev`, `test`, `prod` and `gateway`.
 
 Go to https://github.com/bcgov/bcstats-callweb/settings/environments to configure the rules around which environments require approvals to proceed.
 
-Dispatch requests come from a Github Action at https://github.com/bcgov-c/tenant-gitops-af9df1/blob/main/.github/workflows/main.yaml.
-
 ### Generating environment variables
 
 Use the following script to generate the data that will reside in the Environment Secret `CONFIG`:
@@ -26,7 +24,7 @@ def rando_cred(len):
 def rando_s3(len):
   return rando(len, string.ascii_uppercase + string.digits)
 
-tuples = [
+vars = [
     ("MINIO_ROOT_USER", rando_cred(6)),
     ("MINIO_ROOT_PASSWORD", rando_cred(10)),
     ("S3_ACCESS_KEY", rando_s3(16)),
@@ -37,7 +35,7 @@ tuples = [
     ("CTX_FS_GROUP", sys.argv[1]),
     ("CTX_RUN_AS_USER", sys.argv[1]),
 ]
-for t,v in tuples:
-  print("%s=%s\n" % (t, v))
+for k,v in vars:
+  print("%s=%s\n" % (k, v))
 ' | python3 - $OPENSHIFT_NS_CONTEXT
 ```
