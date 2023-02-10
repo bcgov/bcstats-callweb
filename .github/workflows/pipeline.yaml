@@ -18,64 +18,11 @@ on:
         default: ""
 
 jobs:
-  initiate:
+  deploy-dev:
     runs-on: ubuntu-latest
     environment: "dev"
     steps:
-      - name: build
-        run: |
-          echo "### Helm Manifest ${{ inputs.target_revision }}" >> $GITHUB_STEP_SUMMARY
-          echo "https://github.com/bcgov-c/tenant-gitops-af9df1/releases/tag/${{ inputs.target_revision }}" >> $GITHUB_STEP_SUMMARY
-
-      - uses: actions/checkout@v3
-
-      - name: Install oc
-        uses: redhat-actions/oc-installer@v1
+      - name: Deploy
+        uses: "./.github/templates/deploy"
         with:
-          oc_version: "4.6"
-
-      - name: "Get Helm"
-        run: |
-          curl -L -O https://get.helm.sh/helm-v3.11.1-linux-amd64.tar.gz
-          tar -xf helm-*-linux-amd64.tar.gz
-          export PATH=$PATH:`pwd`/linux-amd64
-
-      - name: Authenticate to silver and set context
-        uses: redhat-actions/oc-login@v1
-        with:
-          openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
-          openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
-
-          # Disables SSL cert checking. Use this if you don't have the certificate authority data.
-          insecure_skip_tls_verify: true
-
-          namespace: ${{ vars.OCP_LICENSE_PLATE }}-dev
-
-      - name: Report
-        run: |
-          (echo '<pre>'; helm version; echo '</pre>') >> $GITHUB_STEP_SUMMARY
-          (echo '<pre>'; helm list; echo '</pre>') >> $GITHUB_STEP_SUMMARY
-
-      - name: "Deploy Solution"
-        run: |
-          echo "${{ secrets.CONFIG }}" > .env
-          # set -a && . ./.env && set +a
-          . ./.env; cat env.template.yaml | envsubst > .env.yaml
-
-          cat .env.yaml
-          helm dependency build charts/minio
-          helm upgrade --install minio-dev -n ${{ vars.OCP_LICENSE_PLATE }}-dev --history-max 2 -f .env.yaml ./charts/minio
-
-          helm dependency build charts/mariadb
-          helm upgrade --install mariadb-dev -n ${{ vars.OCP_LICENSE_PLATE }}-dev --history-max 2 -f .env.yaml ./charts/mariadb
-
-          helm dependency build charts/callweb-admin
-          helm upgrade --install admin-dev -n ${{ vars.OCP_LICENSE_PLATE }}-dev --history-max 2 -f .env.yaml ./charts/callweb-admin
-
-          helm dependency build charts/callweb-survey
-          helm upgrade --install survey-dev -n ${{ vars.OCP_LICENSE_PLATE }}-dev --history-max 2 -f .env.yaml ./charts/callweb-survey
-
-      - name: Post Upgrade Summary
-        run: |
-          echo "### Post Upgrade Summary" >> $GITHUB_STEP_SUMMARY
-          (echo '<pre>'; helm list -n ${{ vars.OCP_LICENSE_PLATE }}-dev; echo '</pre>') >> $GITHUB_STEP_SUMMARY
+          environment: dev
