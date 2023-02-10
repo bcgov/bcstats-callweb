@@ -32,7 +32,7 @@ jobs:
     environment: "dev"
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           ref: ${{ github.event.workflow_run.head_branch }}
 
@@ -43,7 +43,7 @@ jobs:
           openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
           environment: dev
           env_vars: ${{ secrets.CONFIG }}
-          ocp_license_plate: ${{ vars.OCP_LICENSE_PLATE }}
+          ocp_license_plate: ${{ secrets.OCP_LICENSE_PLATE }}
 
   deploy-test:
     runs-on: ubuntu-latest
@@ -63,7 +63,7 @@ jobs:
           openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
           environment: test
           env_vars: ${{ secrets.CONFIG }}
-          ocp_license_plate: ${{ vars.OCP_LICENSE_PLATE }}
+          ocp_license_plate: ${{ secrets.OCP_LICENSE_PLATE }}
 
   deploy-prod:
     runs-on: ubuntu-latest
@@ -83,4 +83,4 @@ jobs:
           openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
           environment: prod
           env_vars: ${{ secrets.CONFIG }}
-          ocp_license_plate: ${{ vars.OCP_LICENSE_PLATE }}
+          ocp_license_plate: ${{ secrets.OCP_LICENSE_PLATE }}
