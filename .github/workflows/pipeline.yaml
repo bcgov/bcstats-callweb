@@ -41,7 +41,7 @@ jobs:
           # Disables SSL cert checking. Use this if you don't have the certificate authority data.
           insecure_skip_tls_verify: true
 
-          namespace: ${{ vars.OPENSHIFT_NAMESPACE }}
+          namespace: ${{ vars.OCP_LICENSE_PLATE }}-tools
 
       - name: "Get Helm"
         run: |
@@ -65,17 +65,17 @@ jobs:
           cd infra
           echo "${{ secrets.CONFIG }}" > .env.yaml
 
-          # helm dependency build ./aps-gateway
-          # helm upgrade --install aps-gateway -n af9df1-tools --history-max 2 ./aps-gateway
+          helm dependency build ./aps-gateway
+          helm upgrade --install aps-gateway -n ${{ vars.OCP_LICENSE_PLATE }}-tools --history-max 2 ./aps-gateway
 
           helm dependency build minio
-          helm upgrade --install minio-dev --history-max 2 -f .env.yaml ./minio
+          helm upgrade --install minio-dev -n ${{ vars.OCP_LICENSE_PLATE }}-dev --history-max 2 -f .env.yaml ./minio
 
           helm dependency build mariadb
-          helm upgrade --install mariadb-dev --history-max 2 -f .env.yaml ./mariadb
+          helm upgrade --install mariadb-dev -n ${{ vars.OCP_LICENSE_PLATE }}-dev --history-max 2 -f .env.yaml ./mariadb
 
           helm dependency build callweb-admin
-          helm upgrade --install admin-dev --history-max 2 -f .env.yaml ./callweb-admin
+          helm upgrade --install admin-dev -n ${{ vars.OCP_LICENSE_PLATE }}-dev --history-max 2 -f .env.yaml ./callweb-admin
 
           helm dependency build callweb-survey
-          helm upgrade --install survey-dev --history-max 2 -f .env.yaml ./callweb-survey
+          helm upgrade --install survey-dev -n ${{ vars.OCP_LICENSE_PLATE }}-dev --history-max 2 -f .env.yaml ./callweb-survey
