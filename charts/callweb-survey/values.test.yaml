@@ -9,6 +9,11 @@ callweb:
       cpu: 100m
       memory: 50Mi
 
+  env:
+    DB_HOST:
+      value: mariadb-test
+      secure: true
+
   extraContainers:
     www:
       resources:
@@ -18,6 +23,11 @@ callweb:
         requests:
           cpu: 50m
           memory: 50Mi
+
+      env:
+        DB_HOST:
+          value: mariadb-test
+          secure: true
 
     s3-sync:
       env:
