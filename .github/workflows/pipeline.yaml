@@ -30,4 +30,8 @@ jobs:
       - name: Deploy
         uses: "./.github/templates/deploy"
         with:
+          openshift_server: ${{ secrets.OPENSHIFT_SERVER }}
+          openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
           environment: dev
+          env_vars: ${{ secrets.CONFIG }}
+          ocp_license_plate: ${{ vars.OCP_LICENSE_PLATE }}

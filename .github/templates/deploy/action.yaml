@@ -2,7 +2,15 @@ name: deploy
 
 # Were we can define the inputs that our action will accept
 inputs:
+  openshift_server:
+    required: true
+  openshift_token:
+    required: true
   environment:
+    required: true
+  env_vars:
+    required: true
+  ocp_license_plate:
     required: true
 
 runs:
@@ -26,13 +34,13 @@ runs:
     - name: Authenticate to silver and set context
       uses: redhat-actions/oc-login@v1
       with:
-        openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
-        openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
+        openshift_server_url: ${{ inputs.openshift_server }}
+        openshift_token: ${{ inputs.openshift_token }}
 
         # Disables SSL cert checking. Use this if you don't have the certificate authority data.
         insecure_skip_tls_verify: true
 
-        namespace: ${{ vars.OCP_LICENSE_PLATE }}-${{ inputs.environment }}
+        namespace: ${{ inputs.ocp_license_plate }}-${{ inputs.environment }}
 
     - name: Report
       shell: bash
@@ -43,11 +51,11 @@ runs:
     - name: "Deploy Solution"
       shell: bash
       run: |
-        echo "${{ secrets.CONFIG }}" > .env
+        echo "${{ inputs.env_vars }}" > .env
         set -a && . ./.env && set +a
         cat env.template.yaml | envsubst > .env.yaml
 
-        HELM_ARGS="-n ${{ vars.OCP_LICENSE_PLATE }}-${{ inputs.environment }} --history-max 2 -f .env.yaml"
+        HELM_ARGS="-n ${{ inputs.ocp_license_plate }}-${{ inputs.environment }} --history-max 2 -f .env.yaml"
 
         helm dependency build charts/minio
         helm upgrade --install minio-${{ inputs.environment }} $HELM_ARGS ./charts/minio
@@ -65,4 +73,4 @@ runs:
       shell: bash
       run: |
         echo "### Post Upgrade Summary" >> $GITHUB_STEP_SUMMARY
-        (echo '<pre>'; helm list -n ${{ vars.OCP_LICENSE_PLATE }}-${{ inputs.environment }}; echo '</pre>') >> $GITHUB_STEP_SUMMARY
+        (echo '<pre>'; helm list -n ${{ inputs.ocp_license_plate }}-${{ inputs.environment }}; echo '</pre>') >> $GITHUB_STEP_SUMMARY
