@@ -65,8 +65,8 @@ jobs:
           cd infra
           echo "${{ secrets.CONFIG }}" > .env.yaml
 
-          helm dependency build ./aps-gateway
-          helm upgrade --install aps-gateway -n af9df1-tools --history-max 2 ./aps-gateway
+          # helm dependency build ./aps-gateway
+          # helm upgrade --install aps-gateway -n af9df1-tools --history-max 2 ./aps-gateway
 
           helm dependency build minio
           helm upgrade --install minio-dev --history-max 2 -f .env.yaml ./minio
