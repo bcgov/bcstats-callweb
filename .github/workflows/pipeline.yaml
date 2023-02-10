@@ -45,8 +45,8 @@ jobs:
 
       - name: "Get Helm"
         run: |
-          curl -L -O https://get.helm.sh/helm-v3.4.2-linux-amd64.tar.gz
-          tar -xf helm-v3.4.2-linux-amd64.tar.gz
+          curl -L -O https://get.helm.sh/helm-v3.11.1-linux-amd64.tar.gz
+          tar -xf helm-*-linux-amd64.tar.gz
           export PATH=$PATH:`pwd`/linux-amd64
 
       - name: Report
