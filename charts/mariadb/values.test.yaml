@@ -1,0 +1,7 @@
+mariadb:
+  primary:
+    persistence:
+      size: 50Mi
+  secondary:
+    persistence:
+      size: 50Mi

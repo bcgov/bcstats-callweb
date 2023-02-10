@@ -16,10 +16,13 @@ Use the following script to generate the data that will reside in the Environmen
 OPENSHIFT_NS_CONTEXT=100000000
 echo '
 import sys, random, string
+
 def rando(len, choices):
   return "".join(random.choice(choices) for _ in range(len))
+
 def rando_cred(len):
   return rando(len, string.ascii_uppercase + string.ascii_lowercase + string.digits)
+
 def rando_s3(len):
   return rando(len, string.ascii_uppercase + string.digits)
 

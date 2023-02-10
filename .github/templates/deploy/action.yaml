@@ -60,7 +60,9 @@ runs:
         helm upgrade --install minio-${{ inputs.environment }} $HELM_ARGS ./charts/minio
 
         helm dependency build charts/mariadb
-        helm upgrade --install mariadb-${{ inputs.environment }} $HELM_ARGS ./charts/mariadb
+        helm upgrade --install mariadb-${{ inputs.environment }} $HELM_ARGS \
+          -f ./charts/mariadb/values.${{ inputs.environment }}.yaml \
+          ./charts/mariadb
 
         helm dependency build charts/callweb-admin
         helm upgrade --install admin-${{ inputs.environment }} $HELM_ARGS ./charts/callweb-admin
