@@ -30,7 +30,7 @@ jobs:
       - name: Install oc
         uses: redhat-actions/oc-installer@v1
         with:
-          version: "4.6"
+          oc_version: "4.6"
 
       - name: Authenticate to silver and set context
         uses: redhat-actions/oc-login@v1
@@ -41,7 +41,7 @@ jobs:
           # Disables SSL cert checking. Use this if you don't have the certificate authority data.
           insecure_skip_tls_verify: true
 
-          namespace: ${{ vars.OCP_LICENSE_PLATE }}-tools
+          namespace: ${{ vars.OCP_LICENSE_PLATE }}-dev
 
       - name: "Get Helm"
         run: |
@@ -54,7 +54,7 @@ jobs:
           (echo '<pre>'; helm version; echo '</pre>') >> $GITHUB_STEP_SUMMARY
           (echo '<pre>'; helm list; echo '</pre>') >> $GITHUB_STEP_SUMMARY
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           repository: bcgov-c/tenant-gitops-af9df1
           token: ${{ secrets.GH_TOKEN }}
@@ -66,8 +66,8 @@ jobs:
           cd infra
           echo "${{ secrets.CONFIG }}" > .env.yaml
 
-          helm dependency build ./aps-gateway
-          helm upgrade --install aps-gateway -n ${{ vars.OCP_LICENSE_PLATE }}-tools --history-max 2 ./aps-gateway
+          # helm dependency build ./aps-gateway
+          # helm upgrade --install aps-gateway -n ${{ vars.OCP_LICENSE_PLATE }}-tools --history-max 2 ./aps-gateway
 
           helm dependency build minio
           helm upgrade --install minio-dev -n ${{ vars.OCP_LICENSE_PLATE }}-dev --history-max 2 -f .env.yaml ./minio
@@ -81,8 +81,7 @@ jobs:
           helm dependency build callweb-survey
           helm upgrade --install survey-dev -n ${{ vars.OCP_LICENSE_PLATE }}-dev --history-max 2 -f .env.yaml ./callweb-survey
 
-      - name: Post-Upgrade Summary
+      - name: Post Upgrade Summary
         run: |
-          echo "### Post Ugprade Summary" >> $GITHUB_STEP_SUMMARY
-          (echo '<pre>'; helm version; echo '</pre>') >> $GITHUB_STEP_SUMMARY
-          (echo '<pre>'; helm list; echo '</pre>') >> $GITHUB_STEP_SUMMARY
+          echo "### Post Upgrade Summary" >> $GITHUB_STEP_SUMMARY
+          (echo '<pre>'; helm list -n ${{ vars.OCP_LICENSE_PLATE }}-dev; echo '</pre>') >> $GITHUB_STEP_SUMMARY
