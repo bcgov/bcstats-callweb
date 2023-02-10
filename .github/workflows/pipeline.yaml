@@ -17,6 +17,15 @@ on:
         required: false
         default: ""
 
+  workflow_call:
+    secrets:
+      OPENSHIFT_SERVER:
+        required: true
+      OPENSHIFT_TOKEN:
+        required: true
+      CONFIG:
+        required: true
+
 jobs:
   deploy-dev:
     runs-on: ubuntu-latest
@@ -33,5 +42,45 @@ jobs:
           openshift_server: ${{ secrets.OPENSHIFT_SERVER }}
           openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
           environment: dev
+          env_vars: ${{ secrets.CONFIG }}
+          ocp_license_plate: ${{ vars.OCP_LICENSE_PLATE }}
+
+  deploy-test:
+    runs-on: ubuntu-latest
+    environment: "test"
+    needs: deploy-dev
+    if: always()
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.workflow_run.head_branch }}
+
+      - name: Deploy
+        uses: "./.github/templates/deploy"
+        with:
+          openshift_server: ${{ secrets.OPENSHIFT_SERVER }}
+          openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
+          environment: test
+          env_vars: ${{ secrets.CONFIG }}
+          ocp_license_plate: ${{ vars.OCP_LICENSE_PLATE }}
+
+  deploy-prod:
+    runs-on: ubuntu-latest
+    environment: "prod"
+    needs: deploy-test
+    if: always()
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.workflow_run.head_branch }}
+
+      - name: Deploy
+        uses: "./.github/templates/deploy"
+        with:
+          openshift_server: ${{ secrets.OPENSHIFT_SERVER }}
+          openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
+          environment: prod
           env_vars: ${{ secrets.CONFIG }}
           ocp_license_plate: ${{ vars.OCP_LICENSE_PLATE }}
