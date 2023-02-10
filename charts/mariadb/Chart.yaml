@@ -1,0 +1,16 @@
+apiVersion: v2
+name: mariadb
+description: A Helm chart for deploying MariaDB
+
+type: application
+
+version: 1.0.0
+
+appVersion: 1.0.0
+
+dependencies:
+  - name: mariadb
+    version: 11.4.6
+    repository: https://charts.bitnami.com/bitnami
+    condition: mariadb.enabled
+    alias: mariadb

@@ -1,0 +1,16 @@
+apiVersion: v2
+name: callweb-admin
+description: A Helm chart for deploying CallWeb Admin solution
+
+type: application
+
+version: 1.0.0
+
+appVersion: 1.0.0
+
+dependencies:
+  - name: generic-api
+    version: 0.2.6
+    repository: https://bcgov.github.io/helm-charts
+    condition: callweb.enabled
+    alias: callweb

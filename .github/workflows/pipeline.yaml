@@ -32,6 +32,12 @@ jobs:
         with:
           oc_version: "4.6"
 
+      - name: "Get Helm"
+        run: |
+          curl -L -O https://get.helm.sh/helm-v3.11.1-linux-amd64.tar.gz
+          tar -xf helm-*-linux-amd64.tar.gz
+          export PATH=$PATH:`pwd`/linux-amd64
+
       - name: Authenticate to silver and set context
         uses: redhat-actions/oc-login@v1
         with:
@@ -43,43 +49,33 @@ jobs:
 
           namespace: ${{ vars.OCP_LICENSE_PLATE }}-dev
 
-      - name: "Get Helm"
-        run: |
-          curl -L -O https://get.helm.sh/helm-v3.11.1-linux-amd64.tar.gz
-          tar -xf helm-*-linux-amd64.tar.gz
-          export PATH=$PATH:`pwd`/linux-amd64
-
       - name: Report
         run: |
           (echo '<pre>'; helm version; echo '</pre>') >> $GITHUB_STEP_SUMMARY
           (echo '<pre>'; helm list; echo '</pre>') >> $GITHUB_STEP_SUMMARY
 
       - uses: actions/checkout@v3
-        with:
-          repository: bcgov-c/tenant-gitops-af9df1
-          token: ${{ secrets.GH_TOKEN }}
-          ref: ${{ inputs.target_revision }}
-          path: ./infra
 
       - name: "Deploy Solution"
         run: |
-          cd infra
-          echo "${{ secrets.CONFIG }}" > .env.yaml
-
+          echo "${{ secrets.CONFIG }}" > .env
+          . .env
+          envsubst < env.template.yaml > .env.yaml
+          cat .env.yaml
           # helm dependency build ./aps-gateway
           # helm upgrade --install aps-gateway -n ${{ vars.OCP_LICENSE_PLATE }}-tools --history-max 2 ./aps-gateway
 
-          helm dependency build minio
-          helm upgrade --install minio-dev -n ${{ vars.OCP_LICENSE_PLATE }}-dev --history-max 2 -f .env.yaml ./minio
+          helm dependency build charts/minio
+          helm upgrade --install minio-dev -n ${{ vars.OCP_LICENSE_PLATE }}-dev --history-max 2 -f .env.yaml ./charts/minio
 
-          helm dependency build mariadb
-          helm upgrade --install mariadb-dev -n ${{ vars.OCP_LICENSE_PLATE }}-dev --history-max 2 -f .env.yaml ./mariadb
+          helm dependency build charts/mariadb
+          helm upgrade --install mariadb-dev -n ${{ vars.OCP_LICENSE_PLATE }}-dev --history-max 2 -f .env.yaml ./charts/mariadb
 
-          helm dependency build callweb-admin
-          helm upgrade --install admin-dev -n ${{ vars.OCP_LICENSE_PLATE }}-dev --history-max 2 -f .env.yaml ./callweb-admin
+          helm dependency build charts/callweb-admin
+          helm upgrade --install admin-dev -n ${{ vars.OCP_LICENSE_PLATE }}-dev --history-max 2 -f .env.yaml ./charts/callweb-admin
 
-          helm dependency build callweb-survey
-          helm upgrade --install survey-dev -n ${{ vars.OCP_LICENSE_PLATE }}-dev --history-max 2 -f .env.yaml ./callweb-survey
+          helm dependency build charts/callweb-survey
+          helm upgrade --install survey-dev -n ${{ vars.OCP_LICENSE_PLATE }}-dev --history-max 2 -f .env.yaml ./charts/callweb-survey
 
       - name: Post Upgrade Summary
         run: |

@@ -1,0 +1,71 @@
+minio:
+  securityContext:
+    enabled: false
+
+  rootUser: TO_BE_SET
+  rootPassword: TO_BE_SET
+
+  mode: distributed
+
+  drivesPerNode: 1
+  # Number of MinIO containers running
+  replicas: 4
+  # Number of expanded MinIO clusters
+  pools: 1
+
+  DeploymentUpdate:
+    type: RollingUpdate
+    maxUnavailable: 25%
+    maxSurge: 25%
+
+  persistence:
+    size: 50Mi
+
+  resources:
+    limits:
+      cpu: 150m
+      memory: 500Mi
+    requests:
+      cpu: 25m
+      memory: 200Mi
+
+  users:
+    - accessKey: TO_BE_SET
+      secretKey: TO_BE_SET
+      policy: readwrite
+
+  buckets:
+    - name: default
+      policy: none
+
+  makeUserJob:
+    extraVolumes:
+      - name: etc-minio
+        emptyDir: {}
+    extraVolumeMounts:
+      - name: etc-minio
+        mountPath: /etc/minio
+        readOnly: false
+    resources:
+      limits:
+        cpu: 75m
+        memory: 150Mi
+      requests:
+        cpu: 25m
+        memory: 50Mi
+
+  makeBucketJob:
+    extraVolumes:
+      - name: etc-minio
+        emptyDir: {}
+    extraVolumeMounts:
+      - name: etc-minio
+        mountPath: /etc/minio
+        readOnly: false
+    resources:
+      limits:
+        cpu: 75m
+        memory: 150Mi
+      requests:
+        cpu: 25m
+        memory: 50Mi

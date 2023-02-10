@@ -1,0 +1,226 @@
+callweb:
+  enabled: true
+
+  replicaCount: 1
+
+  rollingUpdate:
+    maxUnavailable: 50%
+    maxSurge: 100%
+
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 5
+    targetCPUUtilizationPercentage: 80
+
+  resources:
+    limits:
+      cpu: 400m
+      memory: 300Mi
+    requests:
+      cpu: 200m
+      memory: 150Mi
+
+  image:
+    repository: artifacts.developer.gov.bc.ca/aaf9-docker/bcstats-callweb
+    pullPolicy: IfNotPresent
+    tag: v0.0.9
+
+  imagePullSecrets:
+    - name: artifactory-pull
+
+  containerPort: 8080
+
+  service:
+    port: 80
+
+  serviceAccount:
+    create: true
+
+  env:
+    MODE:
+      value: DAEMON_ONLY
+    DB_DRIVER:
+      value: mysql
+    DB_HOST:
+      value: mariadb-dev-primary
+      secure: true
+    DB_DATABASE:
+      value: callweb
+      secure: true
+    DB_USERNAME:
+      value: callweb
+      secure: true
+    DB_PASSWORD:
+      value: TO_BE_SET
+      secure: true
+
+  config:
+    - filename: callweb.conf
+      mountPath: /etc/callweb.conf
+      contents: |
+        [GENERAL]
+        LOGLEVEL=1
+
+    - filename: index.html
+      mountPath: /var/www/html/bcsurvey/index.html
+      contents: |
+        <!DOCTYPE html><html><head><meta charSet="utf-8"/><meta name="viewport" content="width=device-width"/>
+        </head><body>
+          Welcome to the BC Demographic Survey
+          <Button>Begin</Button>
+        </body></html>
+
+  persistence:
+    bcsurvey:
+      mountPath: /var/www/html/bcsurvey
+    logs:
+      mountPath: /etc/httpd/logs
+    callweb-logs:
+      mountPath: /var/log
+    dotmc:
+      mountPath: /.mc
+    spool:
+      mountPath: /var/spool/callweb
+
+  nameOverride: survey-dev
+
+  extraLabels:
+    role: callweb
+
+  extraContainers:
+    www:
+      image:
+        repository: artifacts.developer.gov.bc.ca/aaf9-docker/bcstats-callweb
+        pullPolicy: IfNotPresent
+        tag: v0.0.9
+
+      resources:
+        limits:
+          cpu: 100m
+          memory: 300Mi
+        requests:
+          cpu: 50m
+          memory: 100Mi
+
+      env:
+        MODE:
+          value: HTTP_ONLY
+        DB_DRIVER:
+          value: mysql
+        DB_HOST:
+          value: mariadb-dev-primary
+          secure: true
+        DB_DATABASE:
+          value: callweb
+          secure: true
+        DB_USERNAME:
+          value: callweb
+          secure: true
+        DB_PASSWORD:
+          value: TO_BE_SET
+          secure: true
+
+      volumeMounts:
+        - name: bcsurvey-vol
+          mountPath: /var/www/html/bcsurvey
+        - name: spool-vol
+          mountPath: /var/spool/callweb
+        - name: config-vol
+          readOnly: true
+          mountPath: /var/www/html/bcsurvey/index.html
+          subPath: index.html
+
+    s3-sync:
+      image:
+        repository: docker.io/minio/mc
+        pullPolicy: IfNotPresent
+        tag: RELEASE.2023-01-28T20-29-38Z
+
+      resources:
+        limits:
+          cpu: 50m
+          memory: 100Mi
+        requests:
+          cpu: 25m
+          memory: 50Mi
+
+      volumeMounts:
+        - name: dotmc-vol
+          mountPath: /.mc
+        - name: bcsurvey-vol
+          mountPath: /bcsurvey
+
+      env:
+        MINIO_URI:
+          value: http://minio-dev:9000
+
+      command:
+        - sh
+        - -e
+        - -c
+        - |
+          mc alias set s3 $MINIO_URI $ACCESS_KEY $SECRET_KEY
+
+          NAMED_PIPE="/tmp/myFifo"
+          trap "rm -f $NAMED_PIPE" EXIT
+          if [[ ! -p "$NAMED_PIPE" ]]; then
+              mkfifo $NAMED_PIPE
+          fi
+
+          DOSYNC ()
+          {
+            while true
+            do
+              CHANGES=NO
+              while read -t 5 line <>$NAMED_PIPE
+              do
+                echo "$line"
+                CHANGES=YES
+              done
+
+              if [ "$CHANGES" = "YES" ]; then
+                mc mirror --preserve --overwrite --no-color --json s3/default /bcsurvey
+              fi
+            done
+          }
+          DOSYNC &
+
+          stdbuf -oL mc watch --recursive --events put,delete --no-color --json s3/default |
+            while IFS= read -r line
+            do
+              echo "$line" > "$NAMED_PIPE"
+            done
+
+  initContainers:
+    s3-init:
+      image:
+        repository: docker.io/minio/mc
+        pullPolicy: IfNotPresent
+        tag: RELEASE.2023-01-28T20-29-38Z
+
+      resources:
+        limits:
+          cpu: 250m
+          memory: 200Mi
+        requests:
+          cpu: 25m
+          memory: 100Mi
+
+      volumeMounts:
+        - name: dotmc-vol
+          mountPath: /.mc
+        - name: bcsurvey-vol
+          mountPath: /bcsurvey
+
+      env:
+        MINIO_URI:
+          value: http://minio-dev:9000
+
+      command:
+        - sh
+        - -e
+        - -c
+        - |
+          mc alias set s3 $MINIO_URI $ACCESS_KEY $SECRET_KEY
+          mc mirror --preserve --overwrite --remove --no-color --json s3/default /bcsurvey

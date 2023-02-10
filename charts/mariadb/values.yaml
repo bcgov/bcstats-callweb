@@ -1,0 +1,40 @@
+mariadb:
+  enabled: true
+
+  auth:
+    rootPassword: TO_BE_SET
+    createDatabase: true
+    database: callweb
+    username: callweb
+    password: TO_BE_SET
+
+  initdbScripts:
+    my_init.sql: |
+      GRANT ALL PRIVILEGES ON *.* TO 'callweb'@'%';
+
+  primary:
+    podSecurityContext:
+      enabled: false
+    containerSecurityContext:
+      enabled: false
+
+    persistence:
+      size: 2Gi
+
+    resources:
+      limits:
+        cpu: 3000m
+        memory: 1000Mi
+      requests:
+        cpu: 300m
+        memory: 1000Mi
+
+  architecture: replication
+
+  secondary:
+    podSecurityContext:
+      enabled: false
+    containerSecurityContext:
+      enabled: false
+    persistence:
+      size: 2Gi
