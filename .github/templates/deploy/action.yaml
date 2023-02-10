@@ -16,6 +16,7 @@ runs:
         oc_version: "4.6"
 
     - name: "Get Helm"
+      shell: bash
       run: |
         curl -L -O https://get.helm.sh/helm-v3.11.1-linux-amd64.tar.gz
         tar -xf helm-*-linux-amd64.tar.gz
