@@ -59,12 +59,9 @@ jobs:
       - name: "Deploy Solution"
         run: |
           echo "${{ secrets.CONFIG }}" > .env
-          . ./.env
-          cat .env
-          envsubst < env.template.yaml > .env.yaml
+          set -a && . ./.env && set +a
+          cat env.template.yaml | envsubst > .env.yaml
           cat .env.yaml
-          # helm dependency build ./aps-gateway
-          # helm upgrade --install aps-gateway -n ${{ vars.OCP_LICENSE_PLATE }}-tools --history-max 2 ./aps-gateway
 
           helm dependency build charts/minio
           helm upgrade --install minio-dev -n ${{ vars.OCP_LICENSE_PLATE }}-dev --history-max 2 -f .env.yaml ./charts/minio
