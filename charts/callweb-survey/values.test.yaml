@@ -1,4 +1,6 @@
 callweb:
+  nameOverride: survey-test
+
   resources:
     limits:
       cpu: 200m
