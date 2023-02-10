@@ -18,3 +18,14 @@ callweb:
         requests:
           cpu: 50m
           memory: 50Mi
+
+    s3-sync:
+      env:
+        MINIO_URI:
+          value: http://minio-test:9000
+
+  initContainers:
+    s3-init:
+      env:
+        MINIO_URI:
+          value: http://minio-test:9000
