@@ -8,12 +8,13 @@ callweb:
     requests:
       cpu: 100m
       memory: 50Mi
+
   extraContainers:
     www:
       resources:
         limits:
           cpu: 100m
-          memory: 150Mi
+          memory: 100Mi
         requests:
           cpu: 50m
-          memory: 100Mi
+          memory: 50Mi

@@ -77,3 +77,5 @@ runs:
       run: |
         echo "### Post Upgrade Summary" >> $GITHUB_STEP_SUMMARY
         (echo '<pre>'; helm list -n ${{ inputs.ocp_license_plate }}-${{ inputs.environment }}; echo '</pre>') >> $GITHUB_STEP_SUMMARY
+
+        (echo '<pre>'; oc get pods -n ${{ inputs.ocp_license_plate }}-${{ inputs.environment }}; echo '</pre>') >> $GITHUB_STEP_SUMMARY
