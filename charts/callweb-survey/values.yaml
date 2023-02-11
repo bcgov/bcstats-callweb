@@ -67,8 +67,12 @@ callweb:
       contents: |
         <!DOCTYPE html><html><head><meta charSet="utf-8"/><meta name="viewport" content="width=device-width"/>
         </head><body>
-          Welcome to the BC Demographic Survey
-          <Button>Begin</Button>
+          Welcome to the BC Demographic Survey.. Redirecting you to the survey..
+          <script>
+            setTimeout(() => {
+              window.location.assign("/cwx.cgi?_proj=cwde_2022");
+            }, 2000);
+          </script>
         </body></html>
 
   persistence:
