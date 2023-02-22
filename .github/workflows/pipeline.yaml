@@ -1,7 +1,10 @@
 name: Continuous Delivery
-run-name: CD Release ${{ inputs.target_revision }} ${{ inputs.commit_note }}
+#run-name: CD Release ${{ inputs.target_revision }} ${{ inputs.commit_note }}
 
 on:
+  push:
+    branches: [main]
+
   workflow_dispatch:
     inputs:
       target_revision:
