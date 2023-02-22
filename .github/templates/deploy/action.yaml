@@ -60,20 +60,23 @@ runs:
         helm upgrade --install minio-${{ inputs.environment }} $HELM_ARGS ./charts/minio
 
         helm dependency build charts/mariadb
-        helm upgrade --install mariadb-${{ inputs.environment }} $HELM_ARGS \
+        helm upgrade --install mariadb-${{ inputs.environment }} \
           -f ./charts/mariadb/values.${{ inputs.environment }}.yaml \
+          $HELM_ARGS \
           ./charts/mariadb
 
         helm dependency build charts/callweb-admin
-        helm upgrade --install admin-${{ inputs.environment }} $HELM_ARGS \
+        helm upgrade --install admin-${{ inputs.environment }} \
           -f ./charts/callweb-admin/values.yaml \
           -f ./charts/callweb-admin/values.${{ inputs.environment }}.yaml \
+          $HELM_ARGS \
           ./charts/callweb-admin
 
         helm dependency build charts/callweb-survey
-        helm upgrade --install survey-${{ inputs.environment }} $HELM_ARGS \
+        helm upgrade --install survey-${{ inputs.environment }} \
           -f ./charts/callweb-survey/values.yaml \
           -f ./charts/callweb-survey/values.${{ inputs.environment }}.yaml \
+          $HELM_ARGS \
           ./charts/callweb-survey
 
     - name: Post Upgrade Summary
