@@ -203,7 +203,7 @@ callweb:
               sleep 5
             done
           }
-          DOWATCH()
+          DOWATCH
 
   initContainers:
     s3-init:
