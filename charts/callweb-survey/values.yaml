@@ -194,7 +194,7 @@ callweb:
           {
             while true
             do
-              timeout 60 stdbuf -oL mc watch --recursive --events put,delete --no-color --json s3/default |
+              timeout --kill-after=5 60 stdbuf -oL mc watch --recursive --events put,delete --no-color --json s3/default |
                 while IFS= read -r line
                 do
                   echo "$line" > "$NAMED_PIPE"
