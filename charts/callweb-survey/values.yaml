@@ -4,8 +4,8 @@ callweb:
   replicaCount: 1
 
   rollingUpdate:
-    maxUnavailable: 50%
-    maxSurge: 100%
+    maxUnavailable: 10%
+    maxSurge: 25%
 
   autoscaling:
     enabled: false
@@ -101,7 +101,7 @@ callweb:
 
       resources:
         limits:
-          cpu: 100m
+          cpu: 200m
           memory: 300Mi
         requests:
           cpu: 50m
@@ -194,7 +194,7 @@ callweb:
           {
             while true
             do
-              stdbuf -oL mc watch --recursive --events put,delete --no-color --json s3/default |
+              timeout 30 stdbuf -oL mc watch --recursive --events put,delete --no-color --json s3/default |
                 while IFS= read -r line
                 do
                   echo "$line" > "$NAMED_PIPE"

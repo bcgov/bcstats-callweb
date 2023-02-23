@@ -132,6 +132,7 @@ callweb:
         - -e
         - -c
         - |
+          sleep 60 # wait a minute to try and avoid --exclude being ignored
           mc alias set s3 $MINIO_URI $ACCESS_KEY $SECRET_KEY
           mc mirror --watch \
             --exclude "*.verrou" \
