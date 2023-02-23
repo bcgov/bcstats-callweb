@@ -194,12 +194,12 @@ callweb:
           {
             while true
             do
-              timeout 30 stdbuf -oL mc watch --recursive --events put,delete --no-color --json s3/default |
+              timeout 60 stdbuf -oL mc watch --recursive --events put,delete --no-color --json s3/default |
                 while IFS= read -r line
                 do
                   echo "$line" > "$NAMED_PIPE"
                 done
-              echo "Failure watching.. sleeping 5 and trying again."
+              echo "`date` Sleeping 5 seconds and watching again."
               sleep 5
             done
           }
