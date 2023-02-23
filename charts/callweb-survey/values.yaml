@@ -190,11 +190,20 @@ callweb:
           }
           DOSYNC &
 
-          stdbuf -oL mc watch --recursive --events put,delete --no-color --json s3/default |
-            while IFS= read -r line
+          DOWATCH ()
+          {
+            while true
             do
-              echo "$line" > "$NAMED_PIPE"
+              stdbuf -oL mc watch --recursive --events put,delete --no-color --json s3/default |
+                while IFS= read -r line
+                do
+                  echo "$line" > "$NAMED_PIPE"
+                done
+              echo "Failure watching.. sleeping 5 and trying again."
+              sleep 5
             done
+          }
+          DOWATCH()
 
   initContainers:
     s3-init:
