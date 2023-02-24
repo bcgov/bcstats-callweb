@@ -4,7 +4,7 @@ description: A Helm chart for deploying MariaDB
 
 type: application
 
-version: 1.0.0
+version: 11.4.6
 
 appVersion: 1.0.0
 
