@@ -1,5 +1,5 @@
 apiVersion: v2
-name: callweb-application
+name: callweb-survey
 description: A Helm chart for deploying CallWeb solution
 
 type: application
