@@ -8,18 +8,18 @@ callweb:
     maxSurge: 25%
 
   autoscaling:
-    enabled: false
-    minReplicas: 1
-    maxReplicas: 5
+    enabled: true
+    minReplicas: 5
+    maxReplicas: 40
     targetCPUUtilizationPercentage: 80
 
   resources:
     limits:
       cpu: 400m
-      memory: 300Mi
+      memory: 200Mi
     requests:
       cpu: 200m
-      memory: 150Mi
+      memory: 100Mi
 
   image:
     repository: artifacts.developer.gov.bc.ca/aaf9-docker/bcstats-callweb
@@ -52,6 +52,9 @@ callweb:
       value: callweb
       secure: true
     DB_PASSWORD:
+      value: TO_BE_SET
+      secure: true
+    ZIP_PASSWORD:
       value: TO_BE_SET
       secure: true
 
@@ -122,6 +125,9 @@ callweb:
           value: callweb
           secure: true
         DB_PASSWORD:
+          value: TO_BE_SET
+          secure: true
+        ZIP_PASSWORD:
           value: TO_BE_SET
           secure: true
 
