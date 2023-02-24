@@ -39,8 +39,8 @@ jobs:
         uses: rymndhng/release-on-push-action@master
         with:
           bump_version_scheme: minor
-      - id: version_step
-        run: echo "::set-output name=version_number::${{ steps.release.outputs.tag_name }}"
+    outputs:
+      version_number: ${{ steps.release.outputs.tag_name }}
 
   deploy-dev:
     runs-on: ubuntu-latest
@@ -60,7 +60,7 @@ jobs:
           environment: dev
           env_vars: ${{ secrets.CONFIG }}
           ocp_license_plate: ${{ secrets.OCP_LICENSE_PLATE }}
-          tag_version: ${{ jobs.release-on-push.version_step.outputs.version_number }}
+          tag_version: ${{needs.release-on-push.outputs.version_number}}
 
   deploy-test:
     runs-on: ubuntu-latest
