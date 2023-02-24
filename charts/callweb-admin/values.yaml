@@ -45,6 +45,9 @@ callweb:
     DB_PASSWORD:
       value: TO_BE_SET
       secure: true
+    ZIP_PASSWORD:
+      value: TO_BE_SET
+      secure: true
 
   persistence:
     logs:
@@ -94,6 +97,9 @@ callweb:
           value: callweb
           secure: true
         DB_PASSWORD:
+          value: TO_BE_SET
+          secure: true
+        ZIP_PASSWORD:
           value: TO_BE_SET
           secure: true
 
