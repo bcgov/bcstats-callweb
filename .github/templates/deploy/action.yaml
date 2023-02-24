@@ -67,7 +67,7 @@ runs:
         helm upgrade --install mariadb-${{ inputs.environment }} \
           -f ./charts/mariadb/values.${{ inputs.environment }}.yaml \
           $HELM_ARGS \
-          mariadb-1.0.0.tgz
+          mariadb-*.tgz
 
         helm dependency build charts/callweb-admin
         helm package --app-version=${{ inputs.tag_name }} ./charts/callweb-admin
