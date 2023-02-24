@@ -18,6 +18,11 @@ runs:
   steps:
     - uses: actions/checkout@v3
 
+    - id: release
+      uses: rymndhng/release-on-push-action@master
+      with:
+        bump_version_scheme: minor
+
     - name: Install oc
       uses: redhat-actions/oc-installer@v1
       with:
@@ -57,27 +62,31 @@ runs:
         HELM_ARGS="-n ${{ inputs.ocp_license_plate }}-${{ inputs.environment }} --history-max 2 -f .env.yaml"
 
         helm dependency build charts/minio
-        helm upgrade --install minio-${{ inputs.environment }} $HELM_ARGS ./charts/minio
+        helm package --app-version=${{ steps.release.outputs.tag_name }} .charts/minio
+        helm upgrade --install minio-${{ inputs.environment }} $HELM_ARGS minio-1.0.0.tgz
 
         helm dependency build charts/mariadb
+        helm package --app-version=${{ steps.release.outputs.tag_name }} .charts/mariadb
         helm upgrade --install mariadb-${{ inputs.environment }} \
           -f ./charts/mariadb/values.${{ inputs.environment }}.yaml \
           $HELM_ARGS \
-          ./charts/mariadb
+          mariadb-1.0.0.tgz
 
         helm dependency build charts/callweb-admin
+        helm package --app-version=${{ steps.release.outputs.tag_name }} .charts/callweb-admin
         helm upgrade --install admin-${{ inputs.environment }} \
           -f ./charts/callweb-admin/values.yaml \
           -f ./charts/callweb-admin/values.${{ inputs.environment }}.yaml \
           $HELM_ARGS \
-          ./charts/callweb-admin
+          callweb-admin-1.0.0.tgz
 
         helm dependency build charts/callweb-survey
+        helm package --app-version=${{ steps.release.outputs.tag_name }} .charts/callweb-survey
         helm upgrade --install survey-${{ inputs.environment }} \
           -f ./charts/callweb-survey/values.yaml \
           -f ./charts/callweb-survey/values.${{ inputs.environment }}.yaml \
           $HELM_ARGS \
-          ./charts/callweb-survey
+          callweb-survey-1.0.0.tgz
 
     - name: Post Upgrade Summary
       shell: bash
