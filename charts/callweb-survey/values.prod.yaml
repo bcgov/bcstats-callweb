@@ -15,19 +15,19 @@ callweb:
       secure: true
 
   extraContainers:
-    www:
-      resources:
-        limits:
-          cpu: 100m
-          memory: 100Mi
-        requests:
-          cpu: 50m
-          memory: 50Mi
+#     www:
+#       resources:
+#         limits:
+#           cpu: 100m
+#           memory: 100Mi
+#         requests:
+#           cpu: 50m
+#           memory: 50Mi
 
-      env:
-        DB_HOST:
-          value: mariadb-prod
-          secure: true
+#       env:
+#         DB_HOST:
+#           value: mariadb-prod
+#           secure: true
 
     s3-sync:
       env:
