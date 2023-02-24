@@ -39,7 +39,7 @@ callweb:
 
   env:
     MODE:
-      value: BOTH
+      value: DAEMON_ONLY
     DB_DRIVER:
       value: mysql
     DB_HOST:
@@ -96,50 +96,50 @@ callweb:
     role: callweb
 
   extraContainers:
-    # www:
-    #   image:
-    #     repository: artifacts.developer.gov.bc.ca/aaf9-docker/bcstats-callweb
-    #     pullPolicy: IfNotPresent
-    #     tag: v0.0.12
+    www:
+      image:
+        repository: artifacts.developer.gov.bc.ca/aaf9-docker/bcstats-callweb
+        pullPolicy: IfNotPresent
+        tag: v0.0.12
 
-    #   resources:
-    #     limits:
-    #       cpu: 200m
-    #       memory: 300Mi
-    #     requests:
-    #       cpu: 50m
-    #       memory: 100Mi
+      resources:
+        limits:
+          cpu: 200m
+          memory: 300Mi
+        requests:
+          cpu: 50m
+          memory: 100Mi
 
-    #   env:
-    #     MODE:
-    #       value: HTTP_ONLY
-    #     DB_DRIVER:
-    #       value: mysql
-    #     DB_HOST:
-    #       value: mariadb-dev-primary
-    #       secure: true
-    #     DB_DATABASE:
-    #       value: callweb
-    #       secure: true
-    #     DB_USERNAME:
-    #       value: callweb
-    #       secure: true
-    #     DB_PASSWORD:
-    #       value: TO_BE_SET
-    #       secure: true
-    #     ZIP_PASSWORD:
-    #       value: TO_BE_SET
-    #       secure: true
+      env:
+        MODE:
+          value: HTTP_ONLY
+        DB_DRIVER:
+          value: mysql
+        DB_HOST:
+          value: mariadb-dev-primary
+          secure: true
+        DB_DATABASE:
+          value: callweb
+          secure: true
+        DB_USERNAME:
+          value: callweb
+          secure: true
+        DB_PASSWORD:
+          value: TO_BE_SET
+          secure: true
+        ZIP_PASSWORD:
+          value: TO_BE_SET
+          secure: true
 
-    #   volumeMounts:
-    #     - name: bcsurvey-vol
-    #       mountPath: /var/www/html/bcsurvey
-    #     - name: spool-vol
-    #       mountPath: /var/spool/callweb
-    #     - name: config-vol
-    #       readOnly: true
-    #       mountPath: /var/www/html/bcsurvey/index.html
-    #       subPath: index.html
+      volumeMounts:
+        - name: bcsurvey-vol
+          mountPath: /var/www/html/bcsurvey
+        - name: spool-vol
+          mountPath: /var/spool/callweb
+        - name: config-vol
+          readOnly: true
+          mountPath: /var/www/html/bcsurvey/index.html
+          subPath: index.html
 
     s3-sync:
       image:
