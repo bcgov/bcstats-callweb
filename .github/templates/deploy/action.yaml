@@ -12,7 +12,7 @@ inputs:
     required: true
   ocp_license_plate:
     required: true
-  tag_version:
+  tag_name:
     required: true
 
 runs:

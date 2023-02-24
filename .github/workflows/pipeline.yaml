@@ -60,12 +60,14 @@ jobs:
           environment: dev
           env_vars: ${{ secrets.CONFIG }}
           ocp_license_plate: ${{ secrets.OCP_LICENSE_PLATE }}
-          tag_version: ${{needs.release-on-push.outputs.version_number}}
+          tag_name: ${{needs.release-on-push.outputs.version_number}}
 
   deploy-test:
     runs-on: ubuntu-latest
     environment: "test"
-    needs: deploy-dev
+    needs:
+      - release-on-push
+      - deploy-dev
     if: always()
     steps:
       - name: Checkout
@@ -81,11 +83,14 @@ jobs:
           environment: test
           env_vars: ${{ secrets.CONFIG }}
           ocp_license_plate: ${{ secrets.OCP_LICENSE_PLATE }}
+          tag_name: ${{needs.release-on-push.outputs.version_number}}
 
   deploy-prod:
     runs-on: ubuntu-latest
     environment: "prod"
-    needs: deploy-test
+    needs:
+      - release-on-push
+      - deploy-test
     if: always()
     steps:
       - name: Checkout
@@ -101,3 +106,4 @@ jobs:
           environment: prod
           env_vars: ${{ secrets.CONFIG }}
           ocp_license_plate: ${{ secrets.OCP_LICENSE_PLATE }}
+          tag_name: ${{needs.release-on-push.outputs.version_number}}
