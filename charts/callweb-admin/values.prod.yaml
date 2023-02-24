@@ -1,0 +1,41 @@
+callweb:
+  nameOverride: admin-prod
+
+  resources:
+    limits:
+      cpu: 150m
+      memory: 150Mi
+    requests:
+      cpu: 50m
+      memory: 50Mi
+
+  env:
+    DB_HOST:
+      value: mariadb-prod
+      secure: true
+
+  extraContainers:
+    www:
+      resources:
+        limits:
+          cpu: 100m
+          memory: 100Mi
+        requests:
+          cpu: 50m
+          memory: 50Mi
+
+      env:
+        DB_HOST:
+          value: mariadb-prod
+          secure: true
+
+    s3-sync:
+      env:
+        MINIO_URI:
+          value: http://minio-prod:9000
+
+  initContainers:
+    s3-init:
+      env:
+        MINIO_URI:
+          value: http://minio-prod:9000
