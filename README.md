@@ -35,6 +35,7 @@ vars = [
     ("DB_REPLICATION_PASSWORD", rando_cred(12)),
     ("DB_USERNAME", "callweb"),
     ("DB_PASSWORD", rando_cred(12)),
+    ("ZIP_PASSWORD", rando_cred(24)),
     ("CTX_FS_GROUP", sys.argv[1]),
     ("CTX_RUN_AS_USER", sys.argv[1]),
 ]
