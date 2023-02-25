@@ -1,5 +1,5 @@
 name: Continuous Delivery
-#run-name: CD Release ${{ inputs.target_revision }} ${{ inputs.commit_note }}
+run-name: CD Release ${{ github.action }} ${{ github.job }} ${{ github.action_status }}
 
 on:
   push:
@@ -43,6 +43,7 @@ jobs:
       version_number: ${{ steps.release.outputs.tag_name }}
 
   deploy-dev:
+    name: deploy to dev
     runs-on: ubuntu-latest
     environment: "dev"
     needs: release-on-push
@@ -52,7 +53,7 @@ jobs:
         with:
           ref: ${{ github.event.workflow_run.head_branch }}
 
-      - name: Deploy
+      - name: Deploy to Dev
         uses: "./.github/templates/deploy"
         with:
           openshift_server: ${{ secrets.OPENSHIFT_SERVER }}
