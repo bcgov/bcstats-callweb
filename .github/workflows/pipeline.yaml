@@ -1,5 +1,5 @@
 name: Continuous Delivery
-run-name: CD Release ${{ github.action }} ${{ github.job }} ${{ github.action_status }}
+# run-name: CD Release ${{ github.action }} ${{ github.job }} ${{ github.action_status }}
 
 on:
   push:
