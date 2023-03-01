@@ -1,0 +1,15 @@
+apiVersion: v2
+name: postfix
+description: A Helm chart for deploying Postfix
+
+type: application
+
+version: 3.6.1
+
+appVersion: v1
+
+dependencies:
+  - name: postfix
+    version: 3.6.1
+    repository: https://bokysan.github.io/docker-postfix/
+    alias: postfix

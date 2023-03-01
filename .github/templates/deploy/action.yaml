@@ -85,6 +85,13 @@ runs:
           $HELM_ARGS \
           callweb-survey-*.tgz
 
+        helm dependency build charts/postfix
+        helm package --app-version=${{ inputs.tag_name }} ./charts/postfix
+        helm upgrade --install postfix-${{ input.environemnt }} \
+         -f ./charts/postfix/values.yaml \
+         $HELM_ARGS \
+         postfix-*.tgz
+
     - name: Post Upgrade Summary
       shell: bash
       run: |

@@ -1,0 +1,58 @@
+replicaCount: 1
+resources:
+  limits:
+    cpu: 200m
+    memory: 128Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+# priorityClassName: mail
+extraVolumes:
+  - name: config
+    configMap:
+      name: postfix-mail
+extraVolumeMounts:
+  - mountPath: /docker-init.db/startup.sh
+    subPath: startup.sh
+    name: config
+
+persistence:
+  enabled: true
+  storageClass: "gp3"
+
+secret:
+  SMTP_SERVER: apps.smtp.gov.bc.ca
+
+config:
+  general:
+    TZ: "America/Vancouver"
+
+    RELAYHOST: "apps.smtp.gov.bc.ca:25"
+    ALLOWED_SENDER_DOMAINS: "gov.bc.ca"
+    LOG_FORMAT: "json"
+
+    #startup.sh: |
+    #  #!/bin/sh
+    #  set -e
+
+    #  RELAY_MAPS=/etc/postfix/relay_maps
+    #  SASL_PASSWD=/etc/postfix/sasl_passwd
+
+    #  : > $RELAY_MAPS
+    #  cat > $RELAY_MAPS <<EOF
+    #  @example.com                 [${SMTP_SERVER}]:587
+    #  @example.org                 [${SMTP_SERVER}]:587
+    #  EOF
+    #  postmap /etc/postfix/relay_maps
+
+    #  : > $SASL_PASSWD
+    #  cat > $SASL_PASSWD <<EOF
+    #  [${SMTP_SERVER}]:587 ${ACCESS_KEY}:${SMTP_PASSWORD}
+    #  EOF
+
+    #  postmap /etc/postfix/sasl_passwd
+
+  postfix:
+    smtp_tls_security_level: "encrypt"
+    smtp_tls_note_starttls_offer: "yes"
