@@ -24,7 +24,7 @@ callweb:
   image:
     repository: artifacts.developer.gov.bc.ca/aaf9-docker/bcstats-callweb
     pullPolicy: IfNotPresent
-    tag: v0.0.12
+    tag: v0.0.23
 
   imagePullSecrets:
     - name: artifactory-pull
@@ -73,7 +73,7 @@ callweb:
           Welcome to the BC Demographic Survey.. Redirecting you to the survey..
           <script>
             setTimeout(() => {
-              window.location.assign("/cwx.cgi?_proj=cwde_2022");
+              window.location.assign("/cwx.cgi?_proj=cw221003_roster");
             }, 2000);
           </script>
         </body></html>
