@@ -1,6 +1,9 @@
 callweb:
   nameOverride: survey-prod
 
+  autoscaling:
+    enabled: false
+
   resources:
     limits:
       cpu: 200m
