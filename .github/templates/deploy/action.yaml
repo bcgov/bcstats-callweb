@@ -87,7 +87,7 @@ runs:
 
         helm dependency build charts/postfix
         helm package --app-version=${{ inputs.tag_name }} ./charts/postfix
-        helm upgrade --install postfix-${{ input.environemnt }} \
+        helm upgrade --install postfix-${{ inputs.environemnt }} \
          -f ./charts/postfix/values.yaml \
          $HELM_ARGS \
          postfix-*.tgz
