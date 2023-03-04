@@ -85,10 +85,6 @@ runs:
           $HELM_ARGS \
           callweb-survey-*.tgz
 
-        helm repo add bokysan https://bokysan.github.io/docker-postfix/
-        helm upgrade --install --set persistence.enabled=false \
-          --set config.postfix.RELAYHOST=[apps.smtp.gov.bc.ca]:25 mail bokysan/mail
-
     - name: Post Upgrade Summary
       shell: bash
       run: |
