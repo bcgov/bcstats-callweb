@@ -96,6 +96,22 @@ callweb:
     role: callweb
 
   extraContainers:
+    postfix:
+      image:
+        repository: docker.io/boky/postfix
+        tag: v3.6.1-alpine
+      resources:
+        limits:
+          cpu: 90m
+          memory: 150Mi
+        requests:
+          cpu: 30m
+          memory: 50Mi
+
+      env:
+        ALLOWED_SENDER_DOMAINS:
+          value: gov.bc.ca
+
     # www:
     #   image:
     #     repository: artifacts.developer.gov.bc.ca/aaf9-docker/bcstats-callweb
