@@ -111,6 +111,12 @@ callweb:
       env:
         ALLOWED_SENDER_DOMAINS:
           value: gov.bc.ca
+        POSTFIX_maillog_file:
+          value: /var/log/mail.log
+
+      volumeMounts:
+        - name: logs-vol
+          mountPath: /var/log
 
     # www:
     #   image:
