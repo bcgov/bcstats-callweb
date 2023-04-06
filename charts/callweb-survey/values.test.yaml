@@ -1,6 +1,8 @@
 callweb:
   nameOverride: survey-test
 
+  replicaCount: 1
+
   autoscaling:
     enabled: false
 
@@ -18,19 +20,19 @@ callweb:
       secure: true
 
   extraContainers:
-#     www:
-#       resources:
-#         limits:
-#           cpu: 100m
-#           memory: 100Mi
-#         requests:
-#           cpu: 50m
-#           memory: 50Mi
+    #     www:
+    #       resources:
+    #         limits:
+    #           cpu: 100m
+    #           memory: 100Mi
+    #         requests:
+    #           cpu: 50m
+    #           memory: 50Mi
 
-#       env:
-#         DB_HOST:
-#           value: mariadb-test
-#           secure: true
+    #       env:
+    #         DB_HOST:
+    #           value: mariadb-test
+    #           secure: true
 
     s3-sync:
       env:
