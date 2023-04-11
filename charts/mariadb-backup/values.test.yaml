@@ -23,9 +23,9 @@ backup:
         [mysqld]
         innodb_page_size=32k
         datadir = /var/lib/mysql/data
-        innodb_data_file_path=ibdata1:60M:autoextend
+        innodb_data_file_path=ibdata1:40M:autoextend
+        innodb_temp_data_file_path=ibtmp1:20M
         innodb_buffer_pool_size = 48M
-        innodb_additional_mem_pool_size = 2M
         innodb_log_file_size = 5M
         innodb_log_buffer_size = 8M
         innodb_flush_log_at_trx_commit = 1
