@@ -15,8 +15,8 @@ callweb:
 
   resources:
     limits:
-      cpu: 400m
-      memory: 200Mi
+      cpu: 600m
+      memory: 400Mi
     requests:
       cpu: 200m
       memory: 100Mi
