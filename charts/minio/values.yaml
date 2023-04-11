@@ -9,7 +9,7 @@ minio:
 
   drivesPerNode: 1
   # Number of MinIO containers running
-  replicas: 4
+  replicas: 3
   # Number of expanded MinIO clusters
   pools: 1
 
@@ -24,7 +24,7 @@ minio:
   resources:
     limits:
       cpu: 150m
-      memory: 500Mi
+      memory: 600Mi
     requests:
       cpu: 25m
       memory: 200Mi
