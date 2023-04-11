@@ -14,7 +14,7 @@ backup:
     backup:
       size: 50Mi
     verification:
-      size: 75Mi
+      size: 100Mi
 
   config:
     - filename: 60-tweaks.cnf
