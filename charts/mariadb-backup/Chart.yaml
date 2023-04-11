@@ -4,7 +4,7 @@ description: A Helm chart for backing up and restoring a mariadb database
 
 type: application
 
-version: 0.1.12
+version: 0.1.13
 
 appVersion: 2.5.2
 
