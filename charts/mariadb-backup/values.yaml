@@ -17,6 +17,7 @@ backup:
       contents: |
         [mysqld]
         innodb_page_size=32k
+        datadir = /var/lib/mysql/data
 
   db:
     secretName: survey-dev-secrets
