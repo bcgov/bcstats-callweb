@@ -1,3 +1,9 @@
 backup:
   db:
     secretName: survey-test-secrets
+
+  persistence:
+    backup:
+      size: 50Mi
+    verification:
+      size: 50Mi
