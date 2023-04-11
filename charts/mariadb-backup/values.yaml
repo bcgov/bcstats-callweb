@@ -4,6 +4,14 @@ backup:
     pullPolicy: IfNotPresent
     tag: 2.5.2
 
+  resources:
+    limits:
+      cpu: 50m
+      memory: 100Mi
+    requests:
+      cpu: 25m
+      memory: 50Mi
+
   backupConfig: |
     mariadb=mariadb-dev-primary:3306/callwebcw221003_roster
     mariadb=mariadb-dev-primary:3306/callwebcw221003_sandbox
