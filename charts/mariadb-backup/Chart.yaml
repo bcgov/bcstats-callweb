@@ -10,6 +10,6 @@ appVersion: 2.5.2
 
 dependencies:
   - name: backup-storage
-    version: 0.1.12
+    version: 0.1.13
     repository: https://bcgov.github.io/helm-charts
     alias: backup
