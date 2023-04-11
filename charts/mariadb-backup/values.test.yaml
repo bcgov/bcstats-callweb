@@ -14,4 +14,4 @@ backup:
     backup:
       size: 50Mi
     verification:
-      size: 50Mi
+      size: 75Mi
