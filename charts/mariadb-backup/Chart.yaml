@@ -1,0 +1,15 @@
+apiVersion: v2
+name: mariadb-backup
+description: A Helm chart for backing up and restoring a mariadb database
+
+type: application
+
+version: 0.1.12
+
+appVersion: 2.5.2
+
+dependencies:
+  - name: backup-storage
+    version: 0.1.12
+    repository: https://bcgov.github.io/helm-charts
+    alias: backup
