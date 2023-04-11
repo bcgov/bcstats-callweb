@@ -7,6 +7,7 @@ backup:
   backupConfig: |
     mariadb=mariadb-dev-primary:3306/callwebcw221003_roster
     mariadb=mariadb-dev-primary:3306/callwebcw221003_sandbox
+    mariadb=mariadb-dev-primary:3306/callwebcwde_2022
 
     0 1 * * * default ./backup.sh -s
     0 4 * * * default ./backup.sh -s -v all

@@ -2,6 +2,14 @@ backup:
   db:
     secretName: survey-prod-secrets
 
+  backupConfig: |
+    mariadb=mariadb-prod-primary:3306/callwebcw221003_roster
+    mariadb=mariadb-prod-primary:3306/callwebcw221003_sandbox
+    mariadb=mariadb-prod-primary:3306/callwebcwde_2022
+
+    0 1 * * * default ./backup.sh -s
+    0 4 * * * default ./backup.sh -s -v all
+
   persistence:
     backup:
       size: 50Mi
