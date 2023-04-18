@@ -78,6 +78,197 @@ callweb:
           </script>
         </body></html>
 
+    - filename: survey.bc.conf
+      mountPath: /opt/app-root/etc/httpd.d/survey.bc.conf
+      contents: |
+        #============================================================================
+        #  ServerAdmin
+        #  BufferendLogs                On
+          #== 2022-06-15 - DE - Security Changes
+          ServerSignature               Off
+          ServerTokens                  Prod
+          FileETag                      None
+        #============================================================================
+
+          SetEnvIf Remote_Addr "127\.0\.0\.1" loopback
+
+          #== BCGov and General Search Agents
+          SetEnvIfNoCase User-Agent "BCGOVSearch"       AGENT-Crawler=1 AGENT-BCGOV-Bot=1
+          SetEnvIfNoCase User-Agent "BCGOVSearch\+"     AGENT-Crawler=1 AGENT-BCGOV-Bot=1
+          SetEnvIfNoCase User-Agent "BCGOV\ Search"     AGENT-Crawler=1 AGENT-BCGOV-Bot=1
+          SetEnvIfNoCase User-Agent "WebTrends"         AGENT-Crawler=1 AGENT-BCGOV-Bot=1
+          SetEnvIfNoCase User-Agent "bot"               AGENT-Crawler=1
+
+          SetEnvIfNoCase loopback 1 no-log
+          SetEnvIfNoCase AGENT-BCGOV-Bot 1 no-log
+        #============================================================================
+
+          #ErrorLog "/var/www/html/apache/logs/error_log"
+          #CustomLog "/var/www/html/apache/logs/access_log" combined
+
+        #== 2022-06-16 - DE - increased for load testing
+        # <IfModule mpm_prefork_module>
+        #     # Default 5
+        #     #StartServers 10
+        #     # Default 5
+        #     #MinSpareServers 10
+        #     # Default 10
+        #     #MaxSpareServers 20
+        #     # Do not set ServerLimit higher than MaxRequestWorkers
+        #     # Default 256
+        #     ServerLimit 350
+        #     # Default 256
+        #     # 512 overloaded the server on June 19 2022
+        #     MaxRequestWorkers 350
+        #     # Default 0
+        #     # Set to non-zero value to prevent memory leakage
+        #     MaxConnectionsPerChild 10000
+        # </IfModule>
+
+
+        # <IfModule mpm_event_module>
+
+        # MinSpareThreads 5
+        # MaxSpareThreads 20
+        # ThreadsPerChild 20
+        # ServerLimit 1
+        # MaxRequestWorkers 20
+
+        MinSpareThreads 20
+        MaxSpareThreads 40
+        ThreadsPerChild 20
+        ServerLimit 3
+        MaxRequestWorkers 60
+        MaxConnectionsPerChild   0
+        AsyncRequestWorkerFactor 2
+
+        KeepAlive off
+        #MaxKeepAliveRequests 5
+        #KeepAliveTimeout 3
+
+        # MinSpareThreads 1
+        # MaxSpareThreads 1
+        # ThreadsPerChild 1
+        # ServerLimit 20
+        # MaxRequestWorkers 20
+        # AsyncRequestWorkerFactor 2
+
+
+        # Occasional error AH00484: server reached MaxRequestWorkers setting, consider raising the MaxRequestWorkers setting
+        # Client side: Remote end closed connection without response
+        # ThreadsPerChild 2
+        # ServerLimit 4
+        # MaxRequestWorkers 8
+        # AsyncRequestWorkerFactor 2
+
+        # ThreadsPerChild          1
+
+        # StartServers             1
+        # ServerLimit              2
+        # MaxRequestWorkers        1
+        # MaxConnectionsPerChild   0
+        # MaxSpareThreads          1
+
+        # </IfModule>
+
+        # StartServers             1
+        # MinSpareThreads          1
+        # ServerLimit              1
+
+        #StartServers 1
+        #ServerLimit 100
+        #MaxRequestWorkers 100
+        #MaxConnectionsPerChild 10000
+
+
+
+        #============================================================================
+
+        #Listen :8080
+
+        #============================================================================
+
+        <VirtualHost 0.0.0.0:8080>
+          DocumentRoot /var/www/html/bcsurvey
+
+          LogLevel warn
+
+          DirectoryIndex index.html
+
+          #KeepAliveTimeout 500ms
+
+        #============================================================================
+
+          #ErrorLog  "|/usr/sbin/rotatelogs -l   /var/www/html/apache/logs/Survey-bc-{url}-{%Y.%m.%d}_error_log  86400"
+          #LogFormat "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" combined
+          #LogFormat "%{X-Forwarded-For}i %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" proxy
+          #SetEnvIf X-Forwarded-For "^.*\..*\..*\..*" forwarded
+          #CustomLog "|/usr/sbin/rotatelogs -l   /var/www/html/apache/logs/Survey-bc-{url}-{%Y.%m.%d}_access_log 86400" combined env=!forwarded
+          #CustomLog "|/usr/sbin/rotatelogs -l   /var/www/html/apache/logs/Survey-bc-{url}-{%Y.%m.%d}_access_log 86400" proxy env=forwarded
+          # TransferLog /var/www/html/apache/logs/ssl_access_log
+          ErrorLog /dev/stderr
+          TransferLog /dev/stdout
+
+        #============================================================================
+
+
+          #BEGIN URL Rewrite for Exit survey
+          #RewriteEngine                 ON
+          #RewriteMap lc int:tolower
+          #RewriteCond %{QUERY_STRING} (.*(?:^|&))_proj=cwExit((?:&|$).*)
+          #RewriteRule ^ ${lc:%{REQUEST_URI}}?${lc:%{QUERY_STRING}}
+          #END
+
+          Alias /gr/ "/var/www/html/bcsurvey/gr/"
+          <Directory "/var/www/html/bcsurvey/gr">
+            Options -Indexes +MultiViews
+            AllowOverride None
+            Order allow,deny
+            Allow from all
+          </Directory>
+
+          ScriptAlias /util/ "/var/www/html/bcsurvey/util/"
+
+          <Directory "/var/www/html/bcsurvey">
+            Options -Indexes +FollowSymLinks +ExecCGI
+            Require all granted
+            #AddHandler cgi-script .cgi .pl
+            AddHandler fcgid-script .cgi .pl
+          </Directory>
+
+          #== 2023-02-02 - AC - Ensures the daemon can be accessed from Apache
+          <Directory "/var/www/html/bcsurvey/daemon">
+            Require all denied
+          </Directory>
+
+          #== 2022-01-04 - DE - added this directory clause to deny access to etc directory
+          #== 2022-01-07 - DE - BC Stats requires access to cwupdate.histo
+          <Directory "/var/www/html/bcsurvey/etc">
+            Require all denied
+            <Files "cwupdate.histo">
+                # BC Stats VPN group
+                # Require ip 142.32.49.161/27
+                # BC Stats subnet @ Queen's Printer office
+                # Require ip 142.36.240.0/24
+                # DSS VPN group
+                # Require ip 142.32.85.192/26
+            </Files>
+          </Directory>
+
+          <Directory "/var/www/html/bcsurvey/util">
+            # BC Stats VPN group
+            # Require ip 142.32.49.161/27
+            # BC Stats subnet @ Queen's Printer office
+            # Require ip 142.36.240.0/24
+            # DSS VPN group
+            # Require ip 142.32.85.192/26
+          </Directory>
+        </VirtualHost>
+
+        #============================================================================
+
+
+
   persistence:
     bcsurvey:
       mountPath: /var/www/html/bcsurvey
