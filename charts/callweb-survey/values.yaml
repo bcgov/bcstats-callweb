@@ -166,7 +166,7 @@ callweb:
           value: http://minio-dev:9000
 
       command:
-        - sh
+        - bash
         - -e
         - -c
         - |
@@ -209,7 +209,10 @@ callweb:
               sleep 5
             done
           }
-          DOWATCH
+          DOWATCH &
+
+          wait -n
+          kill $(jobs -p)
 
   initContainers:
     s3-init:
