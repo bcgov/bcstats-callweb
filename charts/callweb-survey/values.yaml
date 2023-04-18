@@ -167,7 +167,7 @@ callweb:
 
       command:
         - bash
-        - -e
+        - +e
         - -c
         - |
           mc alias set s3 $MINIO_URI $ACCESS_KEY $SECRET_KEY
@@ -200,10 +200,14 @@ callweb:
           {
             while true
             do
+              mc alias set s3 $MINIO_URI $ACCESS_KEY $SECRET_KEY
+
               timeout --kill-after=5 60 stdbuf -oL mc watch --recursive --events put,delete --no-color --json s3/default |
                 while IFS= read -r line
                 do
-                  echo "$line" > "$NAMED_PIPE"
+                  if [ $(echo "$line" | jq .status) = '"success"' ]; then
+                    echo "$line" > "$NAMED_PIPE"
+                  fi
                 done
               echo "`date` Sleeping 5 seconds and watching again."
               sleep 5
