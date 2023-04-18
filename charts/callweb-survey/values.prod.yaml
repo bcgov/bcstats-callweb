@@ -3,6 +3,10 @@ callweb:
 
   replicaCount: 1
 
+  rollingUpdate:
+    maxUnavailable: 50%
+    maxSurge: 50%
+
   autoscaling:
     enabled: false
 
