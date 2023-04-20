@@ -9,9 +9,9 @@ callweb:
 
   autoscaling:
     enabled: true
-    minReplicas: 20
+    minReplicas: 2
     maxReplicas: 20
-    targetCPUUtilizationPercentage: 80
+    targetCPUUtilizationPercentage: 30
 
   resources:
     limits:
@@ -74,7 +74,7 @@ callweb:
           <script>
             setTimeout(() => {
               window.location.assign("cwx.cgi?_proj=cw221003_roster");
-            }, 2000);
+            }, 10);
           </script>
         </body></html>
 
@@ -128,59 +128,24 @@ callweb:
 
         # <IfModule mpm_event_module>
 
-        # MinSpareThreads 5
-        # MaxSpareThreads 20
-        # ThreadsPerChild 20
-        # ServerLimit 1
-        # MaxRequestWorkers 20
+        MinSpareThreads 2
+        MaxSpareThreads 2
 
-        MinSpareThreads 20
-        MaxSpareThreads 40
-        ThreadsPerChild 20
-        ServerLimit 3
-        MaxRequestWorkers 60
+        MaxClients 1
+        ServerLimit 1
+
+        ThreadsPerChild 2
+        MaxRequestWorkers 2
+
         MaxConnectionsPerChild   0
-        AsyncRequestWorkerFactor 2
+        AsyncRequestWorkerFactor 1
+
+        FcgidBusyTimeout 20
+        FcgidBusyScanInterval 10
 
         KeepAlive off
         #MaxKeepAliveRequests 5
         #KeepAliveTimeout 3
-
-        # MinSpareThreads 1
-        # MaxSpareThreads 1
-        # ThreadsPerChild 1
-        # ServerLimit 20
-        # MaxRequestWorkers 20
-        # AsyncRequestWorkerFactor 2
-
-
-        # Occasional error AH00484: server reached MaxRequestWorkers setting, consider raising the MaxRequestWorkers setting
-        # Client side: Remote end closed connection without response
-        # ThreadsPerChild 2
-        # ServerLimit 4
-        # MaxRequestWorkers 8
-        # AsyncRequestWorkerFactor 2
-
-        # ThreadsPerChild          1
-
-        # StartServers             1
-        # ServerLimit              2
-        # MaxRequestWorkers        1
-        # MaxConnectionsPerChild   0
-        # MaxSpareThreads          1
-
-        # </IfModule>
-
-        # StartServers             1
-        # MinSpareThreads          1
-        # ServerLimit              1
-
-        #StartServers 1
-        #ServerLimit 100
-        #MaxRequestWorkers 100
-        #MaxConnectionsPerChild 10000
-
-
 
         #============================================================================
 
@@ -287,51 +252,6 @@ callweb:
     role: callweb
 
   extraContainers:
-    # www:
-    #   image:
-    #     repository: artifacts.developer.gov.bc.ca/aaf9-docker/bcstats-callweb
-    #     pullPolicy: IfNotPresent
-    #     tag: v0.0.12
-
-    #   resources:
-    #     limits:
-    #       cpu: 200m
-    #       memory: 300Mi
-    #     requests:
-    #       cpu: 50m
-    #       memory: 100Mi
-
-    #   env:
-    #     MODE:
-    #       value: HTTP_ONLY
-    #     DB_DRIVER:
-    #       value: mysql
-    #     DB_HOST:
-    #       value: mariadb-dev-primary
-    #       secure: true
-    #     DB_DATABASE:
-    #       value: callweb
-    #       secure: true
-    #     DB_USERNAME:
-    #       value: callweb
-    #       secure: true
-    #     DB_PASSWORD:
-    #       value: TO_BE_SET
-    #       secure: true
-    #     ZIP_PASSWORD:
-    #       value: TO_BE_SET
-    #       secure: true
-
-    #   volumeMounts:
-    #     - name: bcsurvey-vol
-    #       mountPath: /var/www/html/bcsurvey
-    #     - name: spool-vol
-    #       mountPath: /var/spool/callweb
-    #     - name: config-vol
-    #       readOnly: true
-    #       mountPath: /var/www/html/bcsurvey/index.html
-    #       subPath: index.html
-
     s3-sync:
       image:
         repository: docker.io/minio/mc
