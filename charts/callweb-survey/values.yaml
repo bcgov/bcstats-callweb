@@ -40,6 +40,8 @@ callweb:
   env:
     MODE:
       value: BOTH
+    ROLE:
+      value: SURVEY
     DB_DRIVER:
       value: mysql
     DB_HOST:
