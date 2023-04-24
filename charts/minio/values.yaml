@@ -19,7 +19,7 @@ minio:
     maxSurge: 25%
 
   persistence:
-    size: 100Mi
+    size: 50Mi
 
   resources:
     limits:
