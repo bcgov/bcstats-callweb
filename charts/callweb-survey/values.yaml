@@ -4,7 +4,7 @@ callweb:
   replicaCount: 1
 
   rollingUpdate:
-    maxUnavailable: 10%
+    maxUnavailable: 25%
     maxSurge: 25%
 
   autoscaling:

@@ -4,19 +4,22 @@ callweb:
   replicaCount: 1
 
   rollingUpdate:
-    maxUnavailable: 50%
-    maxSurge: 50%
+    maxUnavailable: 0
+    maxSurge: 1
 
   autoscaling:
-    enabled: false
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 3
+    targetCPUUtilizationPercentage: 40
 
   resources:
     limits:
-      cpu: 200m
-      memory: 150Mi
+      cpu: 600m
+      memory: 200Mi
     requests:
-      cpu: 100m
-      memory: 50Mi
+      cpu: 200m
+      memory: 100Mi
 
   env:
     DB_HOST:
@@ -24,20 +27,6 @@ callweb:
       secure: true
 
   extraContainers:
-    #     www:
-    #       resources:
-    #         limits:
-    #           cpu: 100m
-    #           memory: 100Mi
-    #         requests:
-    #           cpu: 50m
-    #           memory: 50Mi
-
-    #       env:
-    #         DB_HOST:
-    #           value: mariadb-test
-    #           secure: true
-
     s3-sync:
       env:
         MINIO_URI:
