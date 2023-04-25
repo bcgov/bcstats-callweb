@@ -57,7 +57,7 @@ callweb:
     spool:
       mountPath: /var/spool/callweb
     bcsurvey:
-      size: 100Mi
+      size: 300Mi
       mountPath: /var/www/html/bcsurvey
       storageClassName: netapp-block-standard
       storageAccessMode: ReadWriteOnce
