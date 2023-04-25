@@ -38,6 +38,8 @@ backup:
       value:
     ENVIRONMENT_FRIENDLY_NAME:
       value: "Maria DB Backups"
+    TZ:
+      value: America/Vancouver
 
   persistence:
     backup:
