@@ -32,7 +32,6 @@ mariadb:
       innodb_page_size=32k
       character-set-server=utf8mb4
       collation-server=utf8mb4_unicode_520_ci
-      default_time_zone='America/Vancouver'
 
       [client]
       port=3306
