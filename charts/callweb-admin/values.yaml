@@ -133,7 +133,7 @@ callweb:
         MINIO_URI:
           value: http://minio-dev:9000
         TZ:
-          America/Vancouver
+          value: America/Vancouver
 
       command:
         - sh
@@ -184,7 +184,7 @@ callweb:
           value: http://minio-dev:9000
           secret: true
         TZ:
-          America/Vancouver
+          value: America/Vancouver
 
       command:
         - sh
