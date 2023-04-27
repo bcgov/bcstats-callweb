@@ -65,9 +65,9 @@ mariadb:
         cpu: 300m
         memory: 1000Mi
 
-    env:
-      TZ:
-        value: America/Vancouver
+    extraEnvVars:
+      - name: TZ
+        value: "America/Vancouver"
 
   architecture: replication
 
@@ -78,6 +78,6 @@ mariadb:
       enabled: false
     persistence:
       size: 2Gi
-    env:
-      TZ:
-        value: America/Vancouver
+    extraEnvVars:
+      - name: TZ
+        value: "America/Vancouver"
