@@ -277,8 +277,6 @@ callweb:
       env:
         MINIO_URI:
           value: http://minio-dev:9000
-        TZ:
-          value: 'America/Vancouver'
 
       command:
         - bash
@@ -357,8 +355,6 @@ callweb:
       env:
         MINIO_URI:
           value: http://minio-dev:9000
-        TZ:
-          value: 'America/Vancouver'
 
       command:
         - sh
