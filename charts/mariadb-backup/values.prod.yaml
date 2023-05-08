@@ -3,8 +3,11 @@ backup:
     secretName: survey-prod-secrets
 
   backupConfig: |
-    mariadb=mariadb-prod:3306/callwebcw221003_roster
-    mariadb=mariadb-prod:3306/callwebcw221003_sandbox
+    mariadb=mariadb-prod:3306/callwebcw241198_roster_test
+    mariadb=mariadb-prod:3306/callwebcw241198_sandbox_resume_test
+    mariadb=mariadb-prod:3306/callwebcw241198_sandbox_test_p1
+    mariadb=mariadb-prod:3306/callwebcw241198_sandbox_test_p2
+    mariadb=mariadb-prod:3306/callwebcw241198_sandbox_test_p3
 
     0 1 * * * default ./backup.sh -s
     0 4 * * * default ./backup.sh -s -v all
