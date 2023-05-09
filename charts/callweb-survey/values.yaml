@@ -65,7 +65,7 @@ callweb:
       path: /index.html
       port: http
     initialDelaySeconds: 5
-    periodSeconds: 120
+    periodSeconds: 15
 
   config:
     - filename: callweb.conf
