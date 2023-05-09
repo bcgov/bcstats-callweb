@@ -60,6 +60,13 @@ callweb:
       value: TO_BE_SET
       secure: true
 
+  readinessProbe:
+    httpGet:
+      path: /index.html
+      port: http
+    initialDelaySeconds: 5
+    periodSeconds: 10
+
   config:
     - filename: callweb.conf
       mountPath: /etc/callweb.conf
