@@ -46,9 +46,9 @@ mariadb:
 
       [mysql]
       default-character-set=utf8mb4
-    
+
     existingConfigmap: ""
-    
+
     podSecurityContext:
       enabled: false
     containerSecurityContext:
@@ -59,11 +59,11 @@ mariadb:
 
     resources:
       limits:
-        cpu: 3000m
-        memory: 1000Mi
+        cpu: 100m
+        memory: 150Mi
       requests:
-        cpu: 300m
-        memory: 1000Mi
+        cpu: 50m
+        memory: 50Mi
 
     extraEnvVars:
       - name: TZ
