@@ -5,8 +5,8 @@ mariadb:
 
     resources:
       limits:
-        cpu: 100m
-        memory: 150Mi
+        cpu: 800m
+        memory: 1500Mi
       requests:
         cpu: 50m
         memory: 50Mi
