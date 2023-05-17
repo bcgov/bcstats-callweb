@@ -12,7 +12,7 @@ backup:
 
   persistence:
     backup:
-      size: 50Mi
+      size: 500Mi
     verification:
       size: 100Mi
 
