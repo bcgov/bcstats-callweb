@@ -23,7 +23,7 @@ callweb:
 
   env:
     DB_HOST:
-      value: mariadb-prod
+      value: mariadb-prod-primary
       secure: true
 
   extraContainers:
