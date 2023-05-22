@@ -1,14 +1,24 @@
 mariadb:
   primary:
     persistence:
-      size: 400Mi
+      size: 4Gi
 
     resources:
       limits:
-        cpu: 100m
-        memory: 150Mi
+        cpu: 400m
+        memory: 1000Mi
       requests:
         cpu: 50m
         memory: 50Mi
 
-  architecture: standalone
+  secondary:
+    persistence:
+      size: 4Gi
+
+    resources:
+      limits:
+        cpu: 400m
+        memory: 1000Mi
+      requests:
+        cpu: 50m
+        memory: 50Mi
