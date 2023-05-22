@@ -1,0 +1,191 @@
+callweb:
+  enabled: true
+
+  replicaCount: 1
+
+  rollingUpdate:
+    maxUnavailable: 100%
+    maxSurge: 0%
+
+  resources:
+    limits:
+      cpu: 150m
+      memory: 300Mi
+    requests:
+      cpu: 50m
+      memory: 100Mi
+
+  image:
+    repository: artifacts.developer.gov.bc.ca/aaf9-docker/bcstats-callweb
+    pullPolicy: IfNotPresent
+    tag: v0.0.52
+
+  imagePullSecrets:
+    - name: artifactory-pull
+
+  containerPort: 8080
+
+  service:
+    port: 80
+
+  env:
+    MODE:
+      value: BOTH
+    DB_DRIVER:
+      value: mysql
+    DB_HOST:
+      value: mariadb-dev-primary
+      secure: true
+    DB_DATABASE:
+      value: callweb
+      secure: true
+    DB_USERNAME:
+      value: callweb
+      secure: true
+    DB_PASSWORD:
+      value: TO_BE_SET
+      secure: true
+    ZIP_PASSWORD:
+      value: TO_BE_SET
+      secure: true
+
+  persistence:
+    logs:
+      mountPath: /etc/httpd/logs
+    dotmc:
+      mountPath: /.mc
+    spool:
+      mountPath: /var/spool/callweb
+    bcsurvey:
+      size: 300Mi
+      mountPath: /var/www/html/bcsurvey
+      storageClassName: netapp-block-standard
+      storageAccessMode: ReadWriteOnce
+
+  nameOverride: admin-dev
+
+  extraLabels:
+    role: callweb
+
+  extraContainers:
+    # www:
+    #   image:
+    #     repository: artifacts.developer.gov.bc.ca/aaf9-docker/bcstats-callweb
+    #     pullPolicy: IfNotPresent
+    #     tag: v0.0.12
+
+    #   resources:
+    #     limits:
+    #       cpu: 150m
+    #       memory: 300Mi
+    #     requests:
+    #       cpu: 50m
+    #       memory: 100Mi
+
+    #   env:
+    #     MODE:
+    #       value: HTTP_ONLY
+    #     DB_DRIVER:
+    #       value: mysql
+    #     DB_HOST:
+    #       value: mariadb-dev-primary
+    #       secure: true
+    #     DB_DATABASE:
+    #       value: callweb
+    #       secure: true
+    #     DB_USERNAME:
+    #       value: callweb
+    #       secure: true
+    #     DB_PASSWORD:
+    #       value: TO_BE_SET
+    #       secure: true
+    #     ZIP_PASSWORD:
+    #       value: TO_BE_SET
+    #       secure: true
+
+    #   volumeMounts:
+    #     - name: bcsurvey-vol
+    #       mountPath: /var/www/html/bcsurvey
+    #     - name: spool-vol
+    #       mountPath: /var/spool/callweb
+
+    s3-sync:
+      image:
+        repository: docker.io/minio/mc
+        pullPolicy: IfNotPresent
+        tag: RELEASE.2023-02-16T19-20-11Z
+
+      resources:
+        limits:
+          cpu: 75m
+          memory: 200Mi
+        requests:
+          cpu: 25m
+          memory: 100Mi
+
+      volumeMounts:
+        - name: dotmc-vol
+          mountPath: /.mc
+        - name: bcsurvey-vol
+          mountPath: /bcsurvey
+
+      env:
+        MINIO_URI:
+          value: http://minio-dev:9000
+
+      command:
+        - sh
+        - -e
+        - -c
+        - |
+          sleep 10 # wait a minute to try and avoid --exclude being ignored
+          mc alias set s3 $MINIO_URI $ACCESS_KEY $SECRET_KEY
+          mc mirror --watch \
+            --exclude "*.verrou" \
+            --exclude "etc/*.pcw" \
+            --exclude "*.pcw" \
+            --exclude "css/**" \
+            --exclude "cal/**" \
+            --exclude "*.pl" \
+            --exclude "*.cgi" \
+            --exclude "daemon/**" \
+            --exclude "gr/**" \
+            --exclude "graphics/**" \
+            --exclude "js/**" \
+            --exclude "util/**" \
+            --exclude "cwjscripts.js" \
+            --preserve --remove --overwrite --no-color --json /bcsurvey s3/default
+
+  initContainers:
+    s3-init:
+      image:
+        repository: docker.io/minio/mc
+        pullPolicy: IfNotPresent
+        tag: RELEASE.2023-02-16T19-20-11Z
+
+      resources:
+        limits:
+          cpu: 250m
+          memory: 200Mi
+        requests:
+          cpu: 25m
+          memory: 100Mi
+
+      volumeMounts:
+        - name: dotmc-vol
+          mountPath: /.mc
+        - name: bcsurvey-vol
+          mountPath: /bcsurvey
+
+      env:
+        MINIO_URI:
+          value: http://minio-dev:9000
+          secret: true
+
+      command:
+        - sh
+        - -e
+        - -c
+        - |
+          mc alias set s3 $MINIO_URI $ACCESS_KEY $SECRET_KEY
+          mc mirror --exclude "etc/*.pcw" --preserve --overwrite --no-color --json s3/default /bcsurvey

@@ -11,24 +11,10 @@ callweb:
 
   env:
     DB_HOST:
-      value: mariadb-prod
+      value: mariadb-prod-primary
       secure: true
 
   extraContainers:
-#     www:
-#       resources:
-#         limits:
-#           cpu: 100m
-#           memory: 100Mi
-#         requests:
-#           cpu: 50m
-#           memory: 50Mi
-
-#       env:
-#         DB_HOST:
-#           value: mariadb-prod
-#           secure: true
-
     s3-sync:
       env:
         MINIO_URI:
