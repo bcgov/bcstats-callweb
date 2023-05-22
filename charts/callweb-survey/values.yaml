@@ -24,7 +24,7 @@ callweb:
   image:
     repository: artifacts.developer.gov.bc.ca/aaf9-docker/bcstats-callweb
     pullPolicy: IfNotPresent
-    tag: v0.0.23
+    tag: TO_BE_SET
 
   imagePullSecrets:
     - name: artifactory-pull
