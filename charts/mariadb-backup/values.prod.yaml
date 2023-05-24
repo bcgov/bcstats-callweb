@@ -8,6 +8,7 @@ backup:
     mariadb=mariadb-prod:3306/callwebcw241198_sandbox_test_p1
     mariadb=mariadb-prod:3306/callwebcw241198_sandbox_test_p2
     mariadb=mariadb-prod:3306/callwebcw241198_sandbox_test_p3
+    mariadb=mariadb-prod:3306/callwebcw241198_surveyassist
 
     0 1 * * * default ./backup.sh -s
     0 4 * * * default ./backup.sh -s -v all
