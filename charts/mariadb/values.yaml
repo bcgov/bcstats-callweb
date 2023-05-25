@@ -32,6 +32,8 @@ mariadb:
       innodb_page_size=32k
       character-set-server=utf8mb4
       collation-server=utf8mb4_unicode_520_ci
+      plugin-load=server_audit=server_audit.so
+      server_audit_logging=ON
 
       [client]
       port=3306
