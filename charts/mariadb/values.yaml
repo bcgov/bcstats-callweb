@@ -34,6 +34,7 @@ mariadb:
       collation-server=utf8mb4_unicode_520_ci
       plugin-load=server_audit=server_audit.so
       server_audit_logging=ON
+      server_audit_file_path=/opt/bitnami/mariadb/logs/server_audit.log
 
       [client]
       port=3306
