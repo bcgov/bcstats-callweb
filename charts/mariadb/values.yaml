@@ -35,6 +35,7 @@ mariadb:
       plugin-load=server_audit=server_audit.so
       server_audit_logging=ON
       server_audit_file_path=/opt/bitnami/mariadb/logs/server_audit.log
+      server_audit_events=QUERY, TABLE
 
       [client]
       port=3306
