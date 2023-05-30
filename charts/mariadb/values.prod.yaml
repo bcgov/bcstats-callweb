@@ -13,7 +13,7 @@ mariadb:
 
   secondary:
     persistence:
-      size: 4Gi
+      size: 10Gi
 
     resources:
       limits:
