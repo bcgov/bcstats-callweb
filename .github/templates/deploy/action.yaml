@@ -85,7 +85,7 @@ runs:
           $HELM_ARGS \
           callweb-admin-*.tgz
 
-        helm dependency build charts/callweb-survey
+        helm dependency update charts/callweb-survey
         helm package --app-version=${{ inputs.tag_name }} ./charts/callweb-survey
         helm upgrade --install survey-${{ inputs.environment }} \
           -f ./charts/callweb-survey/values.yaml \

@@ -12,4 +12,5 @@ dependencies:
   - name: generic-api
     version: 0.2.7
     repository: https://bcgov.github.io/helm-charts
+    condition: callweb.enabled
     alias: callweb
