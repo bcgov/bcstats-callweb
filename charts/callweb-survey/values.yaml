@@ -83,7 +83,7 @@ callweb:
           Welcome to the BC Demographic Survey.. Redirecting you to the survey..
           <script>
             setTimeout(() => {
-              window.location.assign("cwx.cgi?_proj=cw241198_roster_test");
+              window.location.assign("cwx.cgi?_crypt=0648090e3706647073453404412d467e1d3c1b3101361404");
             }, 10);
           </script>
         </body></html>
