@@ -9,7 +9,7 @@ callweb:
 
   autoscaling:
     enabled: true
-    minReplicas: 2
+    minReplicas: 15
     maxReplicas: 90
     targetCPUUtilizationPercentage: 40
 
