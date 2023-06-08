@@ -32,8 +32,12 @@ mariadb:
       innodb_page_size=32k
       character-set-server=utf8mb4
       collation-server=utf8mb4_unicode_520_ci
-      log_output=TABLE
-      general_log
+      plugin-load=server_audit=server_audit.so
+      server_audit_logging=ON
+      server_audit_file_path=/opt/bitnami/mariadb/logs/server_audit.log
+      server_audit_events='query,table'
+      server_audit_file_rotate_size=10000000 
+      server_audit_file_rotations=30
 
       [client]
       port=3306
@@ -93,9 +97,12 @@ mariadb:
       innodb_page_size=32k
       character-set-server=utf8mb4
       collation-server=utf8mb4_unicode_520_ci
-      log_output=TABLE
-      general_log
-      
+      plugin-load=server_audit=server_audit.so
+      server_audit_logging=ON
+      server_audit_file_path=/opt/bitnami/mariadb/logs/server_audit.log
+      server_audit_events='query,table'
+      server_audit_file_rotate_size=10000000 
+      server_audit_file_rotations=30
 
       [client]
       port=3306
