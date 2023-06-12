@@ -40,6 +40,8 @@ backup:
       value: "Maria DB Backups"
     TZ:
       value: America/Vancouver
+    FTP-USER:
+      value: ${FTP_USER}
 
   persistence:
     backup:
