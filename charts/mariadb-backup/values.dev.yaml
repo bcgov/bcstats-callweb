@@ -1,5 +1,5 @@
 backup:
   env:
     FTP_USER:
-      value: TO_BE_SET
+      value: ${FTP_USER}
       secure: true
