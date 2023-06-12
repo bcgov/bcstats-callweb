@@ -9,8 +9,8 @@ callweb:
 
   resources:
     limits:
-      cpu: 150m
-      memory: 300Mi
+      cpu: 200m
+      memory: 500Mi
     requests:
       cpu: 50m
       memory: 100Mi
@@ -49,6 +49,182 @@ callweb:
       value: TO_BE_SET
       secure: true
 
+  config:
+    - filename: callweb.conf
+      mountPath: /etc/callweb.conf
+      contents: |
+        [GENERAL]
+        LOGLEVEL=1
+
+    - filename: index.html
+      mountPath: /var/www/html/bcsurvey/index.html
+      contents: |
+        <!DOCTYPE html><html><head><meta charSet="utf-8"/><meta name="viewport" content="width=device-width"/>
+        </head><body>
+          Welcome to the BC Demographic Survey.. Redirecting you to the survey..
+          <script>
+            setTimeout(() => {
+              window.location.assign("cwx.cgi?_crypt=0648090e3706647073453404412d467e1d3c1b3101361404");
+            }, 10);
+          </script>
+        </body></html>
+
+    - filename: survey.bc.conf
+      mountPath: /opt/app-root/etc/httpd.d/survey.bc.conf
+      contents: |
+        #============================================================================
+        #  ServerAdmin
+        #  BufferendLogs                On
+          #== 2022-06-15 - DE - Security Changes
+          ServerSignature               Off
+          ServerTokens                  Prod
+          FileETag                      None
+        #============================================================================
+
+          SetEnvIf Remote_Addr "127\.0\.0\.1" loopback
+
+          #== BCGov and General Search Agents
+          SetEnvIfNoCase User-Agent "BCGOVSearch"       AGENT-Crawler=1 AGENT-BCGOV-Bot=1
+          SetEnvIfNoCase User-Agent "BCGOVSearch\+"     AGENT-Crawler=1 AGENT-BCGOV-Bot=1
+          SetEnvIfNoCase User-Agent "BCGOV\ Search"     AGENT-Crawler=1 AGENT-BCGOV-Bot=1
+          SetEnvIfNoCase User-Agent "WebTrends"         AGENT-Crawler=1 AGENT-BCGOV-Bot=1
+          SetEnvIfNoCase User-Agent "bot"               AGENT-Crawler=1
+
+          SetEnvIfNoCase loopback 1 no-log
+          SetEnvIfNoCase AGENT-BCGOV-Bot 1 no-log
+        #============================================================================
+
+          #ErrorLog "/var/www/html/apache/logs/error_log"
+          #CustomLog "/var/www/html/apache/logs/access_log" combined
+
+        #== 2022-06-16 - DE - increased for load testing
+        # <IfModule mpm_prefork_module>
+        #     # Default 5
+        #     #StartServers 10
+        #     # Default 5
+        #     #MinSpareServers 10
+        #     # Default 10
+        #     #MaxSpareServers 20
+        #     # Do not set ServerLimit higher than MaxRequestWorkers
+        #     # Default 256
+        #     ServerLimit 350
+        #     # Default 256
+        #     # 512 overloaded the server on June 19 2022
+        #     MaxRequestWorkers 350
+        #     # Default 0
+        #     # Set to non-zero value to prevent memory leakage
+        #     MaxConnectionsPerChild 10000
+        # </IfModule>
+
+
+        # <IfModule mpm_event_module>
+
+        MinSpareThreads 2
+        MaxSpareThreads 2
+
+        MaxClients 1
+        ServerLimit 1
+
+        ThreadsPerChild 2
+        MaxRequestWorkers 2
+
+        MaxConnectionsPerChild   0
+        AsyncRequestWorkerFactor 1
+
+        FcgidBusyTimeout 20
+        FcgidBusyScanInterval 10
+
+        KeepAlive off
+        #MaxKeepAliveRequests 5
+        #KeepAliveTimeout 3
+
+        Timeout 600
+
+        #============================================================================
+
+        #Listen :8080
+
+        #============================================================================
+
+        <VirtualHost 0.0.0.0:8080>
+          DocumentRoot /var/www/html/bcsurvey
+
+          LogLevel warn
+
+          DirectoryIndex index.html
+
+          #KeepAliveTimeout 500ms
+
+        #============================================================================
+
+          #ErrorLog  "|/usr/sbin/rotatelogs -l   /var/www/html/apache/logs/Survey-bc-{url}-{%Y.%m.%d}_error_log  86400"
+          #LogFormat "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" combined
+          #LogFormat "%{X-Forwarded-For}i %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" proxy
+          #SetEnvIf X-Forwarded-For "^.*\..*\..*\..*" forwarded
+          #CustomLog "|/usr/sbin/rotatelogs -l   /var/www/html/apache/logs/Survey-bc-{url}-{%Y.%m.%d}_access_log 86400" combined env=!forwarded
+          #CustomLog "|/usr/sbin/rotatelogs -l   /var/www/html/apache/logs/Survey-bc-{url}-{%Y.%m.%d}_access_log 86400" proxy env=forwarded
+          # TransferLog /var/www/html/apache/logs/ssl_access_log
+          ErrorLog /dev/stderr
+          TransferLog /dev/stdout
+
+        #============================================================================
+
+
+          #BEGIN URL Rewrite for Exit survey
+          #RewriteEngine                 ON
+          #RewriteMap lc int:tolower
+          #RewriteCond %{QUERY_STRING} (.*(?:^|&))_proj=cwExit((?:&|$).*)
+          #RewriteRule ^ ${lc:%{REQUEST_URI}}?${lc:%{QUERY_STRING}}
+          #END
+
+          Alias /gr/ "/var/www/html/bcsurvey/gr/"
+          <Directory "/var/www/html/bcsurvey/gr">
+            Options -Indexes +MultiViews
+            AllowOverride None
+            Order allow,deny
+            Allow from all
+          </Directory>
+
+          ScriptAlias /util/ "/var/www/html/bcsurvey/util/"
+
+          <Directory "/var/www/html/bcsurvey">
+            Options -Indexes +FollowSymLinks +ExecCGI
+            Require all granted
+            #AddHandler cgi-script .cgi .pl
+            AddHandler fcgid-script .cgi .pl
+          </Directory>
+
+          #== 2023-02-02 - AC - Ensures the daemon can be accessed from Apache
+          <Directory "/var/www/html/bcsurvey/daemon">
+            Require all denied
+          </Directory>
+
+          #== 2022-01-04 - DE - added this directory clause to deny access to etc directory
+          #== 2022-01-07 - DE - BC Stats requires access to cwupdate.histo
+          <Directory "/var/www/html/bcsurvey/etc">
+            Require all denied
+            <Files "cwupdate.histo">
+                # BC Stats VPN group
+                # Require ip 142.32.49.161/27
+                # BC Stats subnet @ Queen's Printer office
+                # Require ip 142.36.240.0/24
+                # DSS VPN group
+                # Require ip 142.32.85.192/26
+            </Files>
+          </Directory>
+
+          <Directory "/var/www/html/bcsurvey/util">
+            # BC Stats VPN group
+            # Require ip 142.32.49.161/27
+            # BC Stats subnet @ Queen's Printer office
+            # Require ip 142.36.240.0/24
+            # DSS VPN group
+            # Require ip 142.32.85.192/26
+          </Directory>
+        </VirtualHost>
+
+        #============================================================================
+
   persistence:
     logs:
       mountPath: /etc/httpd/logs
@@ -68,47 +244,6 @@ callweb:
     role: callweb
 
   extraContainers:
-    # www:
-    #   image:
-    #     repository: artifacts.developer.gov.bc.ca/aaf9-docker/bcstats-callweb
-    #     pullPolicy: IfNotPresent
-    #     tag: v0.0.12
-
-    #   resources:
-    #     limits:
-    #       cpu: 150m
-    #       memory: 300Mi
-    #     requests:
-    #       cpu: 50m
-    #       memory: 100Mi
-
-    #   env:
-    #     MODE:
-    #       value: HTTP_ONLY
-    #     DB_DRIVER:
-    #       value: mysql
-    #     DB_HOST:
-    #       value: mariadb-dev-primary
-    #       secure: true
-    #     DB_DATABASE:
-    #       value: callweb
-    #       secure: true
-    #     DB_USERNAME:
-    #       value: callweb
-    #       secure: true
-    #     DB_PASSWORD:
-    #       value: TO_BE_SET
-    #       secure: true
-    #     ZIP_PASSWORD:
-    #       value: TO_BE_SET
-    #       secure: true
-
-    #   volumeMounts:
-    #     - name: bcsurvey-vol
-    #       mountPath: /var/www/html/bcsurvey
-    #     - name: spool-vol
-    #       mountPath: /var/spool/callweb
-
     s3-sync:
       image:
         repository: docker.io/minio/mc
