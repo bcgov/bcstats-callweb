@@ -1,1 +1,4 @@
-backup: {}
+backup:
+  env:
+    FTP_USER:
+      value: ${FTP_USER}
