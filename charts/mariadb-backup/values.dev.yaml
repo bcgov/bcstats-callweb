@@ -1,5 +1,1 @@
-backup:
-  env:
-    FTP_USER:
-      value: ${FTP_USER}
-      secure: true
+backup: {}
