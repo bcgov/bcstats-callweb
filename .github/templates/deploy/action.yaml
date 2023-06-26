@@ -60,7 +60,10 @@ runs:
 
         helm dependency build charts/minio
         helm package --app-version=${{ inputs.tag_name }} ./charts/minio
-        helm upgrade --install minio-${{ inputs.environment }} $HELM_ARGS minio-*.tgz
+        helm upgrade --install minio-${{ inputs.environment }} \
+          -f ./charts/minio/values.${{ inputs.environment }}.yaml \
+          $HELM_ARGS \
+          minio-*.tgz
 
         helm dependency build charts/mariadb
         helm package --app-version=${{ inputs.tag_name }} ./charts/mariadb

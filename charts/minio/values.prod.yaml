@@ -1,0 +1,8 @@
+minio:
+  resources:
+    limits:
+      cpu: 300m
+      memory: 1500Mi
+    requests:
+      cpu: 25m
+      memory: 200Mi
