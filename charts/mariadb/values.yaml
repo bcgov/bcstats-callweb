@@ -36,8 +36,8 @@ mariadb:
       server_audit_logging=ON
       server_audit_file_path=/bitnami/mariadb/data/server_audit.log
       server_audit_events='query,table'
-      server_audit_file_rotate_size=10000000 
-      server_audit_file_rotations=60
+      server_audit_file_rotate_size=100000000 
+      server_audit_file_rotations=10
 
       [client]
       port=3306
