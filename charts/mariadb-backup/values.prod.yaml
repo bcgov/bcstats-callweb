@@ -16,7 +16,7 @@ backup:
 
   persistence:
     backup:
-      size: 500Mi
+      size: 1Gi
     verification:
       size: 1Gi
 
