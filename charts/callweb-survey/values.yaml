@@ -65,16 +65,8 @@ callweb:
       path: /index.html
       port: 8080
     initialDelaySeconds: 5
-    timeoutSeconds: 5
+    timeoutSeconds: 15
     periodSeconds: 15
-
-  livenessProbe:
-    httpGet:
-      path: /index.html
-      port: 8080
-    initialDelaySeconds: 30
-    timeoutSeconds: 5
-    periodSeconds: 25
 
   config:
     - filename: callweb.conf
