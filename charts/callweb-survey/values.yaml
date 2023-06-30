@@ -68,6 +68,15 @@ callweb:
     timeoutSeconds: 15
     periodSeconds: 15
 
+  livenessProbe:
+    httpGet:
+      path: /index.html
+      port: 8080
+    failureThreshold: 5
+    initialDelaySeconds: 5
+    timeoutSeconds: 15
+    periodSeconds: 15  
+
   config:
     - filename: callweb.conf
       mountPath: /etc/callweb.conf
