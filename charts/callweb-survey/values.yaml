@@ -72,10 +72,9 @@ callweb:
     httpGet:
       path: /index.html
       port: 8080
-    failureThreshold: 5
     initialDelaySeconds: 5
     timeoutSeconds: 15
-    periodSeconds: 15  
+    periodSeconds: 30  
 
   config:
     - filename: callweb.conf
