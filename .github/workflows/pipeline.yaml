@@ -59,7 +59,7 @@ jobs:
           openshift_server: ${{ secrets.OPENSHIFT_SERVER }}
           openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
           environment: dev
-          env_vars: "${{ secrets.CONFIG }}"
+          env_vars: ${{ secrets.CONFIG }}
           ocp_license_plate: ${{ secrets.OCP_LICENSE_PLATE }}
           tag_name: ${{needs.release-on-push.outputs.version_number}}
 
@@ -82,7 +82,7 @@ jobs:
           openshift_server: ${{ secrets.OPENSHIFT_SERVER }}
           openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
           environment: test
-          env_vars: "${{ secrets.CONFIG }}"
+          env_vars: ${{ secrets.CONFIG }}
           ocp_license_plate: ${{ secrets.OCP_LICENSE_PLATE }}
           tag_name: ${{needs.release-on-push.outputs.version_number}}
 
@@ -105,6 +105,6 @@ jobs:
           openshift_server: ${{ secrets.OPENSHIFT_SERVER }}
           openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
           environment: prod
-          env_vars: "${{ secrets.CONFIG }}"
+          env_vars: ${{ secrets.CONFIG }}
           ocp_license_plate: ${{ secrets.OCP_LICENSE_PLATE }}
           tag_name: ${{needs.release-on-push.outputs.version_number}}
